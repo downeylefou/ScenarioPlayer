@@ -89,7 +89,7 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
-        ///
+        /// ビューやパラメータを初期化する
         /// </summary>
         /// <returns></returns>
         public async Task Initialize()
@@ -102,12 +102,33 @@ namespace GubGub.Scripts.Main
             await InitializeLogDialog();
             InitializeCommandActions();
             
-            await InitializeScenarioParseData();
-
             // Bind();
             AddEventListeners();
+        }
 
+        /// <summary>
+        /// シナリオ、リソースの読み込みを行う
+        /// </summary>
+        /// <param name="loadScenarioPath"></param>
+        /// <returns></returns>
+        public async Task LoadScenario(string loadScenarioPath)
+        {
+            // シナリオの読み込み
+            var scenario = await ResourceManager.LoadText(loadScenarioPath);
+            ParseScenario(scenario);
+
+            // TODO: リソースの読み込み
+        }
+
+        /// <summary>
+        /// シナリオの再生を開始する
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartScenario()
+        {
             Forward();
+
+            await Task.CompletedTask;
         }
 
         private void AddEventListeners()
@@ -155,11 +176,11 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
-        ///  テキストをパースしてリスト化する
+        /// 読み込んだテキストアセットをシナリオデータにパースする
         /// </summary>
-        private async Task InitializeScenarioParseData()
+        /// <param name="scenario"></param>
+        private void ParseScenario(TextAsset scenario)
         {
-            var scenario = await ResourceManager.LoadText("test_scenario");
             List<List<string>> list = _parser.ParseScript("", scenario.text);
 
             _parseData = new ScenarioParseData(list);
