@@ -88,11 +88,9 @@ namespace GubGub.Scripts.Main
         /// <param name="speakerName"></param>
         /// <param name="messageSpeed"></param>
         /// <returns></returns>
-        public async Task OnShowMessage(string message, string speakerName, int messageSpeed)
+        public void OnShowMessage(string message, string speakerName, int messageSpeed)
         {
             _view.ShowMessage(message, speakerName, messageSpeed);
-
-            await Task.CompletedTask;
         }
 
         /// <summary>

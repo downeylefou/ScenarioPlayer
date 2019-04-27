@@ -20,19 +20,14 @@ namespace GubGub.Scripts.Main
     {
 
         /// <summary>
+        ///  シナリオコマンド実行クラス
+        /// </summary>
+        private readonly ScenarioCommandExecutor _commandExecutor = new ScenarioCommandExecutor();
+
+        /// <summary>
         /// TSVファイルスクリプトのパーサー
         /// </summary>
         private readonly ScenarioParser _parser = new ScenarioParser();
-
-        /// <summary>
-        ///  コマンド処理の終了が通知されるストリーム
-        /// </summary>
-        private readonly Subject<Unit> _commandEnd = new Subject<Unit>();
-
-        /// <summary>
-        ///  コマンドタイプに応じたシナリオコマンドを返すクラス
-        /// </summary>
-        private readonly CommandPalette _commandPalette = new CommandPalette();
 
         /// <summary>
         ///  バックログからボイス再生パスを通知されるストリーム
@@ -45,11 +40,6 @@ namespace GubGub.Scripts.Main
         private ScenarioViewMediator _viewMediator;
 
         /// <summary>
-        ///  コマンドに対応した関数リスト
-        /// </summary>
-        private Dictionary<EScenarioCommandType, UnityAction<BaseScenarioCommand>> _commandActions;
-
-        /// <summary>
         ///  パース済みのテキスト配列
         /// </summary>
         private ScenarioParseData _parseData;
@@ -57,12 +47,7 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  シナリオ再生時の各種設定
         /// </summary>
-        private ScenarioConfigData _configData;
-
-        /// <summary>
-        ///  現在実行中のコマンド
-        /// </summary>
-        private BaseScenarioCommand _currentCommand;
+        private ScenarioConfigData _configData = new ScenarioConfigData();
 
         /// <summary>
         ///  現在参照中のスクリプト行
@@ -72,16 +57,22 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  オートプレイ中か
         /// </summary>
-        private bool _isAutoPlaying;
-
+        [SerializeField]
+        private bool _isAutoPlaying = true;
+        
         /// <summary>
         ///  コマンド処理中にユーザー入力を止めるためのフラグ
         /// </summary>
         private bool _isWaitProcess;
-
+        
+        /// <summary>
+        /// メッセージ表示中フラグ
+        /// </summary>
+        private bool _isProcessingShowMessage;
 
         [SerializeField]
         public ScenarioView view;
+        
 
         private async void Awake()
         {
@@ -96,13 +87,12 @@ namespace GubGub.Scripts.Main
         {
             await view.Initialize();
             
-            _configData = new ScenarioConfigData();
             _viewMediator = new ScenarioViewMediator(view, _configData);
 
             await InitializeLogDialog();
             InitializeCommandActions();
             
-            // Bind();
+            Bind();
             AddEventListeners();
         }
 
@@ -131,21 +121,24 @@ namespace GubGub.Scripts.Main
             await Task.CompletedTask;
         }
 
-        private void AddEventListeners()
+        private void Bind()
         {
-            _viewMediator.MessagePresenter.View.OnOptionButton = OnOptionButton;
-            _viewMediator.MessagePresenter.View.OnAutoButton = OnAutoButton;
-            _viewMediator.MessagePresenter.View.OnLogButton = OnLogButton;
-
             _viewMediator.onAnyClick.Subscribe(_ => OnAnyClick()).AddTo(this);
 
             // コマンドの終了を監視
-            _commandEnd.Subscribe(_ => { Forward(); }).AddTo(this);
+            _commandExecutor.commandEnd.Subscribe(_ => { OnCommandEnd(); }).AddTo(this);
 
             // バックログからのボイス再生通知を監視
             _playVoicePathStream.Subscribe(_ => { Debug.Log(_.ToString()); }).AddTo(this);
 
 //            _logDataStream.Subscribe(data => _logDialog.UpdateLog(data)).AddTo(this);
+        }
+        
+        private void AddEventListeners()
+        {
+            _viewMediator.MessagePresenter.View.OnOptionButton = OnOptionButton;
+            _viewMediator.MessagePresenter.View.OnAutoButton = OnAutoButton;
+            _viewMediator.MessagePresenter.View.OnLogButton = OnLogButton;
         }
 
         /// <summary>
@@ -158,21 +151,18 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
-        ///  各コマンドに対応した関数リストを生成
+        /// 各コマンドに対応したメソッドをコマンド実行クラスに登録する
         /// </summary>
         private void InitializeCommandActions()
         {
-            _commandActions = new Dictionary<EScenarioCommandType, UnityAction<BaseScenarioCommand>>()
-            {
-                {EScenarioCommandType.Message, OnMessageCommand},
-                {EScenarioCommandType.ShowWindow, OnShowWindowCommand},
-                {EScenarioCommandType.Stand, OnStandCommand},
-                {EScenarioCommandType.Image, OnImageCommand},
-                {EScenarioCommandType.Wait, OnWaitCommand},
-                {EScenarioCommandType.FadeOut, OnFadeOutCommand},
-                {EScenarioCommandType.FadeIn, OnFadeInCommand},
-                {EScenarioCommandType.Clear, OnClearCommand},
-            };
+            _commandExecutor.AddCommand(EScenarioCommandType.Message, OnMessageCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.ShowWindow, OnShowWindowCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.Stand, OnStandCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.Image, OnImageCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.Wait, OnWaitCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.FadeOut, OnFadeOutCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.FadeIn, OnFadeInCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.Clear, OnClearCommand);
         }
 
         /// <summary>
@@ -234,25 +224,19 @@ namespace GubGub.Scripts.Main
         /// </summary>
         /// <param name="commandName"></param>
         /// <param name="param"></param>
-        private void ProcessCommand(string commandName, List<string> param)
+        public void ProcessCommand(string commandName, List<string> param)
         {
-            _currentCommand = _commandPalette.GetCommand(commandName);
-            _currentCommand.Initialize(param);
-
             SetIsWaitProcessState(true);
-            _commandActions[_currentCommand.CommandType].Invoke(_currentCommand);
+            _commandExecutor.ProcessCommand(commandName, param);
         }
-
+        
         /// <summary>
         ///  メッセージコマンドを処理する
         /// </summary>
         /// <param name="param"></param>
         private void ProcessMessage(List<string> param)
         {
-            // ProcessCommand(EScenarioCommandType.Message.GetName(), param);
-            _currentCommand = _commandPalette.GetCommand(EScenarioCommandType.Message.ToString());
-            _currentCommand.Initialize(param);
-            _commandActions[EScenarioCommandType.Message].Invoke(_currentCommand);
+            _commandExecutor.ProcessCommand(EScenarioCommandType.Message.ToString(), param);
         }
 
         /// <summary>
@@ -288,85 +272,91 @@ namespace GubGub.Scripts.Main
 
         #region commandAction
 
+        /// <summary>
+        /// コマンド完了時
+        /// </summary>
         private void OnCommandEnd()
         {
-            SetIsWaitProcessState(false);
-            _commandEnd.OnNext(Unit.Default);
+            if (!_isProcessingShowMessage)
+            {
+                SetIsWaitProcessState(false);
+                Forward();
+            }
         }
 
-
-        private async void OnClearCommand(BaseScenarioCommand value)
+        private async Task OnClearCommand(BaseScenarioCommand value)
         {
             var command = value as ClearCommand;
             await _viewMediator.Clear(command);
-            OnCommandEnd();
         }
 
-        private async void OnFadeInCommand(BaseScenarioCommand value)
+        private async Task OnFadeInCommand(BaseScenarioCommand value)
         {
             var command = value as FadeInCommand;
             await _viewMediator.FadeIn(command);
-            OnCommandEnd();
         }
 
-        private async void OnFadeOutCommand(BaseScenarioCommand value)
+        private async Task OnFadeOutCommand(BaseScenarioCommand value)
         {
             var command = value as FadeOutCommand;
             await _viewMediator.FadeOut(command);
-            OnCommandEnd();
         }
 
-        private async void OnShowWindowCommand(BaseScenarioCommand value)
+        private async Task OnShowWindowCommand(BaseScenarioCommand value)
         {
             var command = value as ShowWindowCommand;
             _viewMediator.ShowWindow(command);
-            OnCommandEnd();
+            await Task.CompletedTask;
         }
 
-        private async void OnWaitCommand(BaseScenarioCommand value)
+        private async Task OnWaitCommand(BaseScenarioCommand value)
         {
             var command = value as WaitCommand;
             await Task.Delay(command.waitMilliSecond);
-            OnCommandEnd();
         }
 
-        private async void OnImageCommand(BaseScenarioCommand value)
+        private async Task OnImageCommand(BaseScenarioCommand value)
         {
             var command = value as ImageCommand;
             await _viewMediator.OnShowImage(command?.ImageName, command.FadeTimeMilliSecond);
-            OnCommandEnd();
         }
 
-        private async void OnMessageCommand(BaseScenarioCommand value)
+        private async Task OnMessageCommand(BaseScenarioCommand value)
         {
             var command = value as MessageCommand;
             PlayVoice(command?.VoiceName, command?.SpeakerName);
+            
+            _viewMediator.OnShowMessage(
+                command?.Message, command?.SpeakerName, _configData.MessageSpeedMilliSecond);
 
+            _isProcessingShowMessage = true;
+            
             // オートプレイ処理
             // TODO: ボイスの再生待ちも条件に加える
-            if (_isAutoPlaying && command != null)
+            if (command != null)
             {
                 var waitTime = Mathf.Max(
                     _configData.AutoMessageSpeedMilliSecond * command.Message.Length,
                     _configData.MinAutoWaitTimeMilliSecond);
-                Observable.Timer(TimeSpan.FromSeconds(waitTime / 1000f)).Subscribe(_ =>
+                 Observable.Timer(TimeSpan.FromSeconds(waitTime / 1000f))
+                    .Subscribe(_ =>
                 {
                     if (_isAutoPlaying)
                     {
-                        OnCommandEnd();
+                        _isProcessingShowMessage = false;
+                        Forward();
                     }
                 });
             }
 
-            await _viewMediator.OnShowMessage(
-                command?.Message, command?.SpeakerName, _configData.MessageSpeedMilliSecond);
+            await Task.CompletedTask;
         }
 
-        private async void OnStandCommand(BaseScenarioCommand value)
+
+        private async Task OnStandCommand(BaseScenarioCommand value)
         {
             var command = value as StandCommand;
             await _viewMediator.ShowStand(command);
-            OnCommandEnd();
         }
 
         #endregion
@@ -384,6 +374,7 @@ namespace GubGub.Scripts.Main
             }
 
             _isAutoPlaying = false;
+            _isProcessingShowMessage = false;
 
             // メッセージ表示更新中なら、すぐに一括表示させる
             if (_viewMediator.MessagePresenter.IsMessageProcess)
