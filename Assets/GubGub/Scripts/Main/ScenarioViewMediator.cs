@@ -70,6 +70,14 @@ namespace GubGub.Scripts.Main
         }
 
         #region public command method
+                
+        /// <summary>
+        /// シナリオプレイヤーを表示する
+        /// </summary>
+        public void Show()
+        {
+            _view.Show();
+        }
         
         /// <summary>
         /// シナリオプレイヤーを非表示にする
@@ -77,6 +85,14 @@ namespace GubGub.Scripts.Main
         public void Hide()
         {
             _view.Hide();
+        }
+        
+        /// <summary>
+        /// ビューの表示を初期化する
+        /// </summary>
+        public void ResetView()
+        {
+            _view.ResetView();
         }
         
         /// <summary>

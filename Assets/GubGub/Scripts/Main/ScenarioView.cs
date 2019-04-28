@@ -76,13 +76,29 @@ namespace GubGub.Scripts.Main
         }
 
         #region public method
-
+        
+        /// <summary>
+        /// ビューを表示する
+        /// </summary>
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+        
         /// <summary>
         /// ビューを非表示にする
         /// </summary>
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+        
+        /// <summary>
+        /// 表示を初期化する
+        /// </summary>
+        public void ResetView()
+        {
+            MessagePresenter.ClearText();
         }
         
         /// <summary>

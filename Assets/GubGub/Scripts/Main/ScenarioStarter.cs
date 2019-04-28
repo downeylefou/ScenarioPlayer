@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 
@@ -22,6 +23,13 @@ namespace GubGub.Scripts.Main
         /// シナリオのロードが完了すると、自動的に再生を始める
         /// </summary>
         [SerializeField] private bool isAutoPlay;
+
+        /// <summary>
+        /// シナリオ終了を通知するストリーム
+        /// </summary>
+        public IObservable<Unit> IsEndScenario => _isEndScenario;
+        
+        private readonly Subject<Unit> _isEndScenario = new Subject<Unit>();
 
         
         /// <summary>
@@ -48,14 +56,22 @@ namespace GubGub.Scripts.Main
         private void OnScenarioEnd()
         {
             presenter.Hide();
+            
+            _isEndScenario.OnNext(Unit.Default);
         }
         
         /// <summary>
         /// シナリオ、リソースの読み込みを行う
         /// </summary>
+        /// <param name="scenarioFilePath"></param>
         /// <returns></returns>
-        public async Task LoadScenario()
+        public async Task LoadScenario(string scenarioFilePath = null)
         {
+            if (scenarioFilePath != null)
+            {
+                loadScenarioPath = scenarioFilePath;
+            }
+            
             await presenter.LoadScenario(loadScenarioPath);
                             
             if (isAutoPlay)

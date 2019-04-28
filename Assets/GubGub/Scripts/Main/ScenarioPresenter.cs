@@ -9,7 +9,6 @@ using GubGub.Scripts.Lib;
 using GubGub.Scripts.Parser;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace GubGub.Scripts.Main
 {
@@ -130,6 +129,8 @@ namespace GubGub.Scripts.Main
         /// <returns></returns>
         public async Task StartScenario()
         {
+            _viewMediator.ResetView();
+            _viewMediator.Show();
             Forward();
 
             await Task.CompletedTask;
