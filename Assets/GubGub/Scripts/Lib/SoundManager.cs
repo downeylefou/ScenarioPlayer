@@ -31,9 +31,29 @@ namespace GubGub.Scripts.Lib
         [SerializeField] private AudioSource seSource;
     
     
-        private void Start()
+        /// <summary>
+        /// 全てのサウンドを停止する
+        /// </summary>
+        public static void StopSound()
         {
-//            bgmSource = gameObject.GetComponent<AudioSource>();
+            StopBgm();
+            StopSe();
+        }
+        
+        /// <summary>
+        /// BGMを停止する
+        /// </summary>
+        public static void StopBgm()
+        {
+            Instance.bgmSource.Stop();
+        }
+
+        /// <summary>
+        /// SEを停止する
+        /// </summary>
+        public static void StopSe()
+        {
+            Instance.seSource.Stop();
         }
     
         /// <summary>

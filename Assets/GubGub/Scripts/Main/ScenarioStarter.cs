@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using UniRx;
 using UnityEngine;
 
 namespace GubGub.Scripts.Main
@@ -28,10 +29,25 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private async void Awake()
         {
+            Bind();
+            
             if (loadOnAwake)
             {
                 await LoadScenario();
             }
+        }
+
+        private void Bind()
+        {
+            presenter.IsEndScenario.Subscribe(_ => OnScenarioEnd()).AddTo(this);
+        }
+
+        /// <summary>
+        /// シナリオの再生が終了した
+        /// </summary>
+        private void OnScenarioEnd()
+        {
+            presenter.Hide();
         }
         
         /// <summary>

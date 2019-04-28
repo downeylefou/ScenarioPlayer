@@ -75,6 +75,16 @@ namespace GubGub.Scripts.Main
             ChangeMessageViewPosition(EScenarioMessageViewPosition.Bottom);
         }
 
+        #region public method
+
+        /// <summary>
+        /// ビューを非表示にする
+        /// </summary>
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+        
         /// <summary>
         /// メッセージウィンドウの基本ポジションを変更
         /// </summary>
@@ -155,5 +165,7 @@ namespace GubGub.Scripts.Main
         {
             return fadeImage.GetComponent<Image>();
         }
+        
+        #endregion
     }
 }

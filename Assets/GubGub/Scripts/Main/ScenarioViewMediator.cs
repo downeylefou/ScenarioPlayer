@@ -70,7 +70,15 @@ namespace GubGub.Scripts.Main
         }
 
         #region public command method
-
+        
+        /// <summary>
+        /// シナリオプレイヤーを非表示にする
+        /// </summary>
+        public void Hide()
+        {
+            _view.Hide();
+        }
+        
         /// <summary>
         ///  メッセージウィンドウを表示する
         /// </summary>

@@ -18,7 +18,13 @@ namespace GubGub.Scripts.Main
     /// </summary>
     public class ScenarioPresenter : MonoBehaviour
     {
+        /// <summary>
+        /// シナリオ終了を通知するストリーム
+        /// </summary>
+        public IObservable<Unit> IsEndScenario => _isEndScenario;
 
+        private readonly Subject<Unit> _isEndScenario = new Subject<Unit>();
+        
         /// <summary>
         ///  シナリオコマンド実行クラス
         /// </summary>
@@ -94,6 +100,14 @@ namespace GubGub.Scripts.Main
             
             Bind();
             AddEventListeners();
+        }
+        
+        /// <summary>
+        /// シナリオプレイヤーを非表示にする
+        /// </summary>
+        public void Hide()
+        {
+            _viewMediator.Hide();
         }
 
         /// <summary>
@@ -217,6 +231,9 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private void FinishScenario()
         {
+            SoundManager.StopSound();
+            
+            _isEndScenario.OnNext(Unit.Default);
         }
 
         /// <summary>
