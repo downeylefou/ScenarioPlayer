@@ -7,7 +7,7 @@ namespace GubGub.Scripts.Command
     /// </summary>
     public class ImageCommand : BaseScenarioCommand
     {
-        private const int DefaultFadeTimeMilliSecond = 500;
+        public const int DefaultFadeTimeMilliSecond = 500;
 
         public string ImageName { get; private set; }
         public int FadeTimeMilliSecond { get; private set; }

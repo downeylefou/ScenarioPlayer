@@ -8,7 +8,7 @@ namespace GubGub.Scripts.Lib
     ///  リソースマネージャー
     /// TODO リソースは全て非同期で読み込んでいるが、シーン開始前に必要なものを読み込んでキャッシュしておく
     /// </summary>
-    public class ResourceManager
+    public static class ResourceManager
     {
         /// <summary>
         ///  Spriteの読み込み
@@ -18,8 +18,7 @@ namespace GubGub.Scripts.Lib
         /// <returns></returns>
         public static async Task<Sprite> LoadSprite(string filePath)
         {
-            const string prefix = "texture/";
-            return await LoadAssetAsync<Sprite>(prefix + filePath);
+            return await LoadAssetAsync<Sprite>(filePath);
         }
     
         /// <summary>
@@ -29,8 +28,7 @@ namespace GubGub.Scripts.Lib
         /// <returns></returns>
         public static async Task<AudioClip> LoadSound(string filePath)
         {
-            const string prefix = "sound/";
-            return await LoadAssetAsync<AudioClip>(prefix + filePath);
+            return await LoadAssetAsync<AudioClip>(filePath);
         }
         
         /// <summary>
@@ -40,8 +38,7 @@ namespace GubGub.Scripts.Lib
         /// <returns></returns>
         public static async Task<TextAsset> LoadText(string filePath)
         {
-            const string prefix = "scenario/";
-            return await LoadAssetAsync<TextAsset>(prefix + filePath);
+            return await LoadAssetAsync<TextAsset>(filePath);
         }
         
         /// <summary>

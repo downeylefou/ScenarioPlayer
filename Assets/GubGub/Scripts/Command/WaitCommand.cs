@@ -8,7 +8,7 @@ namespace GubGub.Scripts.Command
     /// </summary>
     public class WaitCommand : BaseScenarioCommand
     {
-        private readonly int DefaultWaitMilliSecond = 1000;
+        public const int DefaultWaitMilliSecond = 1000;
 
         public int waitMilliSecond;
 

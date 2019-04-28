@@ -117,10 +117,11 @@ namespace GubGub.Scripts.Main
         public async Task LoadScenario(string loadScenarioPath)
         {
             // シナリオの読み込み
-            var scenario = await ResourceManager.LoadText(loadScenarioPath);
+            var scenario = await ResourceManager.LoadText(
+                ResourcePathSetting.ScenarioResourcePrefix + loadScenarioPath);
             ParseScenario(scenario);
 
-            // TODO: リソースの読み込み
+            // TODO: リソースの事前読み込み
         }
 
         /// <summary>
@@ -178,6 +179,8 @@ namespace GubGub.Scripts.Main
             _commandExecutor.AddCommand(EScenarioCommandType.FadeOut, OnFadeOutCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.FadeIn, OnFadeInCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Clear, OnClearCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.Se, OnSeCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.Bgm, OnBgmCommand);
         }
 
         /// <summary>
@@ -327,16 +330,32 @@ namespace GubGub.Scripts.Main
             await Task.CompletedTask;
         }
 
+        private async Task OnBgmCommand(BaseScenarioCommand value)
+        {
+            var command = value as BgmCommand;
+            SoundManager.PlayBgm(ResourcePathSetting.BgmResourcePrefix + command?.FileName);
+            await Task.CompletedTask;
+        }
+        
+        private async Task OnSeCommand(BaseScenarioCommand value)
+        {
+            var command = value as SeCommand;
+            SoundManager.PlaySe(ResourcePathSetting.SeResourcePrefix + command?.FileName);
+            await Task.CompletedTask;
+        }
+        
         private async Task OnWaitCommand(BaseScenarioCommand value)
         {
-            var command = value as WaitCommand;
-            await Task.Delay(command.waitMilliSecond);
+            await Task.Delay(
+                (value is WaitCommand command)? command.waitMilliSecond : 
+                WaitCommand.DefaultWaitMilliSecond);
         }
 
         private async Task OnImageCommand(BaseScenarioCommand value)
         {
             var command = value as ImageCommand;
-            await _viewMediator.OnShowImage(command?.ImageName, command.FadeTimeMilliSecond);
+            await _viewMediator.OnShowImage(command?.ImageName,
+                command?.FadeTimeMilliSecond ?? ImageCommand.DefaultFadeTimeMilliSecond);
         }
 
         private async Task OnMessageCommand(BaseScenarioCommand value)

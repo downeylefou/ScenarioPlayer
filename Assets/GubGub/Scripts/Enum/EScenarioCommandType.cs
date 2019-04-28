@@ -18,6 +18,8 @@ namespace GubGub.Scripts.Enum
         FadeIn,
         FadeOut,
         Clear,
+        Se,
+        Bgm,
     }
 
     /// <summary>
@@ -38,6 +40,8 @@ namespace GubGub.Scripts.Enum
                 {EScenarioCommandType.FadeIn, "fadeIn"},
                 {EScenarioCommandType.FadeOut, "fadeOut"},
                 {EScenarioCommandType.Clear, "clear"},
+                {EScenarioCommandType.Se, "se"},
+                {EScenarioCommandType.Bgm, "bgm"},
             };
 
         /// <summary>

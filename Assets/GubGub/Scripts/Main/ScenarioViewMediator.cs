@@ -20,13 +20,6 @@ namespace GubGub.Scripts.Main
     {
         #region field
 
-        // 仮のアセットバンドルのパス
-        private const string StandFilePrefix = "characters/";
-        private const string StandPassSuffix = "/stand.png";
-
-        private const string ImageFilePrefix = "backgrounds/";
-        // private const string ImagePassSuffix = "/stand.png";
-
         private const int StandOffsetY = 100;
         private const int StandSideOffset = 300; // 左右の立ち位置の中心を画面中心から振る距離
 
@@ -384,13 +377,8 @@ namespace GubGub.Scripts.Main
         /// <returns></returns>
         private async Task<Sprite> GetBackgroundSprite(string imageName)
         {
-//            var resObj = await ResourceManager.LoadResource(ImageFilePrefix + imageName).ToTask();
-
-//            return resObj.GetResource<Sprite>(ImageFilePrefix + imageName);
-//            return null;
-
-            return await ResourceManager.LoadSprite(ImageFilePrefix + imageName);
-
+            return await ResourceManager.LoadSprite(
+                ResourcePathSetting.BackgroundResourcePrefix + imageName);
         }
 
         /// <summary>
@@ -400,13 +388,8 @@ namespace GubGub.Scripts.Main
         /// <returns></returns>
         private async Task<Sprite> GetStandImageSprite(string imageName)
         {
-            // TODO:ResourceManager
-
-//            var resObj = await ResourceManager.Instance
-//                .LoadResource(StandFilePrefix + imageName + StandPassSuffix).ToTask();
-
-//            return resObj.GetResource<Sprite>(StandFilePrefix + imageName + StandPassSuffix);
-            return await ResourceManager.LoadSprite(StandFilePrefix + imageName);
+            return await ResourceManager.LoadSprite(
+                ResourcePathSetting.StandResourcePrefix + imageName);
         }
 
         /// <summary>
