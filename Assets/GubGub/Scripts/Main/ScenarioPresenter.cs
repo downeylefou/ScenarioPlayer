@@ -74,6 +74,11 @@ namespace GubGub.Scripts.Main
         /// メッセージ表示中フラグ
         /// </summary>
         private bool _isProcessingShowMessage;
+        
+        /// <summary>
+        /// メッセージ表示タイマーのDisposeable
+        /// </summary>
+        private IDisposable _messageTimerDisposable;
 
         [SerializeField]
         public ScenarioView view;
@@ -155,6 +160,8 @@ namespace GubGub.Scripts.Main
             _viewMediator.MessagePresenter.View.OnOptionButton = OnOptionButton;
             _viewMediator.MessagePresenter.View.OnAutoButton = OnAutoButton;
             _viewMediator.MessagePresenter.View.OnLogButton = OnLogButton;
+//            _viewMediator.MessagePresenter.View.OnSkipButton = OnSkipButton();
+            _viewMediator.MessagePresenter.View.OnCloseButton= OnCloseButton;
         }
 
         /// <summary>
@@ -375,20 +382,22 @@ namespace GubGub.Scripts.Main
                 var waitTime = Mathf.Max(
                     _configData.AutoMessageSpeedMilliSecond * command.Message.Length,
                     _configData.MinAutoWaitTimeMilliSecond);
-                 Observable.Timer(TimeSpan.FromSeconds(waitTime / 1000f))
+
+                _messageTimerDisposable?.Dispose();
+                
+                _messageTimerDisposable = Observable.Timer(TimeSpan.FromSeconds(waitTime / 1000f))
                     .Subscribe(_ =>
                 {
+                    _isProcessingShowMessage = false;
+                    
                     if (_isAutoPlaying)
                     {
-                        _isProcessingShowMessage = false;
                         Forward();
                     }
                 });
             }
-
             await Task.CompletedTask;
         }
-
 
         private async Task OnStandCommand(BaseScenarioCommand value)
         {
@@ -413,6 +422,8 @@ namespace GubGub.Scripts.Main
             _isAutoPlaying = false;
             _isProcessingShowMessage = false;
 
+            _viewMediator.MessagePresenter.SetAutoButtonState(false);
+
             // メッセージ表示更新中なら、すぐに一括表示させる
             if (_viewMediator.MessagePresenter.IsMessageProcess)
             {
@@ -433,18 +444,45 @@ namespace GubGub.Scripts.Main
 //            ShowBackLogDialog();
         }
 
+        /// <summary>
+        /// オプションボタン
+        /// </summary>
         private void OnOptionButton()
         {
             Debug.Log("OnOptionButton");
         }
 
-        private void OnAutoButton()
+        /// <summary>
+        /// オートプレイボタン
+        /// </summary>
+        /// <param name="isAuto"></param>
+        private void OnAutoButton(bool isAuto)
         {
-            _isAutoPlaying = !_isAutoPlaying;
-            if (_isAutoPlaying)
+//            _isAutoPlaying = !_isAutoPlaying;
+            _isAutoPlaying = isAuto;
+            
+            // メッセージ表示タイマー終了後にオートプレイになった場合は、すぐに進める
+            if (_isAutoPlaying && !_isProcessingShowMessage)
             {
-                AutoForward();
+                Forward();
             }
+        }
+
+        /// <summary>
+        /// スキップボタン
+        /// </summary>
+        /// <param name="isSkip"></param>
+        private void OnSkipButton(bool isSkip)
+        {
+            
+        }
+
+        /// <summary>
+        /// クローズボタン
+        /// </summary>
+        private void OnCloseButton()
+        {
+            
         }
 
         #endregion

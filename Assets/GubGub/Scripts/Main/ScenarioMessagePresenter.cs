@@ -81,19 +81,15 @@ namespace GubGub.Scripts.Main
             await Task.CompletedTask;
         }
 
-        private void ChangeWindow(EScenarioMessageViewType type)
+        /// <summary>
+        /// オートボタンのトグル状態を設定する
+        /// </summary>
+        /// <param name="isAuto"></param>
+        public void SetAutoButtonState(bool isAuto)
         {
-            if (_type != type)
-            {
-                ClearText();
-                CurrentView.gameObject.SetActive(false);
-                SetMessageViewPosition(CurrentView);
-                _type = type;
-            }
-
-            CurrentView.gameObject.SetActive(true);
+            CurrentView.SetAutoButtonState(isAuto);
         }
-
+        
         /// <summary>
         ///  マージン座標を指定してウィンドウを表示させる
         /// </summary>
@@ -156,6 +152,26 @@ namespace GubGub.Scripts.Main
             OnEndMessageProcess();
         }
 
+        /// <summary>
+        /// ウィンドウタイプよってウィンドウを切り替える
+        /// </summary>
+        /// <param name="type"></param>
+        private void ChangeWindow(EScenarioMessageViewType type)
+        {
+            if (_type != type)
+            {
+                // 複数のウィンドウを使用したい場合、ここでCurrentViewを変更する
+                
+                // ウィンドウの表示を初期化す
+                ClearText();
+                CurrentView.gameObject.SetActive(false);
+                SetMessageViewPosition(CurrentView);
+                _type = type;
+            }
+
+            CurrentView.gameObject.SetActive(true);
+        }
+        
         /// <summary>
         ///  タイマーのカウントごとにメッセージを1文字ずつ表示する
         ///  タグ文字に対しては、1文字ずつ、対応する終了タグを表示用に挿入する

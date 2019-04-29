@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -12,7 +13,7 @@ namespace GubGub.Scripts.View.Interface
         UnityAction OnOptionButton { set; }
         UnityAction OnCloseButton { set; }
         UnityAction OnLogButton { set; }
-        UnityAction OnAutoButton { set; }
+        UnityAction<bool> OnAutoButton { set; }
         UnityAction OnSkipButton { set; }
 
 
@@ -23,5 +24,6 @@ namespace GubGub.Scripts.View.Interface
         void SetParent(Transform parent, bool worldPositionStays);
       
         Image NextIcon { get; }
+        void SetAutoButtonState(bool isAuto);
     }
 }

@@ -33,7 +33,7 @@ namespace GubGub.Scripts.Data
             MessageViewType = EScenarioMessageViewType.Default;
             MessageSpeedMilliSecond = 30;
             AutoMessageSpeedMilliSecond = 100;
-            MinAutoWaitTimeMilliSecond = 800;
+            MinAutoWaitTimeMilliSecond = 1000;
         }
     }
 }

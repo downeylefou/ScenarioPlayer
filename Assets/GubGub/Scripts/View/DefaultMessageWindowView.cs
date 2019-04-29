@@ -13,34 +13,57 @@ namespace GubGub.Scripts.View
         public UnityAction OnOptionButton { get; set; }
         public UnityAction OnCloseButton { get; set; }
         public UnityAction OnLogButton { get; set; }
-        public UnityAction OnAutoButton { get; set; }
+        public UnityAction<bool> OnAutoButton { get; set; }
         public UnityAction OnSkipButton { get; set; }
+
+        [SerializeField] private Button skipButton;
+        [SerializeField] private Toggle autoButton;
+        [SerializeField] private Button closeButton;
+        [SerializeField] private Button optionButton;
+        [SerializeField] private Button logButton;
+        
+        
         public string MessageText
         {
-            get { return messageText.text; }
-            set { messageText.text = value; }
+            get => messageText.text;
+            set => messageText.text = value;
         }
         
         public string NameText
         {
-            get { return nameText.text; }
-            set { nameText.text = value; }
+            get => nameText.text;
+            set => nameText.text = value;
         }
         
-        public Image NextIcon => nextIcon;
+        public Image NextIcon => nextIcon; 
 
         [SerializeField] private Text messageText;
         [SerializeField] private Text nameText;
         
         [SerializeField] private Image nextIcon;
 
-//        public GameObject gameObject => gameObject;
 
-
+        public void Start()
+        {
+            skipButton.onClick.AddListener(OnSkipButton);
+            autoButton.onValueChanged.AddListener(OnAutoButton);
+            closeButton.onClick.AddListener(OnCloseButton);
+            optionButton.onClick.AddListener(OnOptionButton);
+            logButton.onClick.AddListener(OnLogButton);
+        }
         
         public void SetParent(Transform parent,  bool worldPositionStays)
         {
             gameObject.transform.SetParent(parent, worldPositionStays);
+        }
+        
+        /// <summary>
+        /// オートボタンのトグル状態を設定する
+        /// </summary>
+        /// <param name="isAuto"></param>
+        public void SetAutoButtonState(bool isAuto)
+        {
+            autoButton.isOn = isAuto;
         }
     }
 }

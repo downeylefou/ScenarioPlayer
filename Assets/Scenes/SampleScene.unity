@@ -483,6 +483,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 58043580}
     m_Modifications:
+    - target: {fileID: 1151806712271452, guid: 9f717c10447545b41b33c3356ba91598, type: 3}
+      propertyPath: m_Name
+      value: ScenarioPresenter
+      objectReference: {fileID: 0}
     - target: {fileID: 224030304158631540, guid: 9f717c10447545b41b33c3356ba91598,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -521,6 +525,21 @@ PrefabInstance:
     - target: {fileID: 224030304158631540, guid: 9f717c10447545b41b33c3356ba91598,
         type: 3}
       propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224030304158631540, guid: 9f717c10447545b41b33c3356ba91598,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224030304158631540, guid: 9f717c10447545b41b33c3356ba91598,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224030304158631540, guid: 9f717c10447545b41b33c3356ba91598,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224030304158631540, guid: 9f717c10447545b41b33c3356ba91598,
@@ -578,11 +597,6 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 940622052}
-    - target: {fileID: 114396727776274816, guid: 9f717c10447545b41b33c3356ba91598,
-        type: 3}
-      propertyPath: _isAutoPlaying
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f717c10447545b41b33c3356ba91598, type: 3}
 --- !u!224 &755460994 stripped
