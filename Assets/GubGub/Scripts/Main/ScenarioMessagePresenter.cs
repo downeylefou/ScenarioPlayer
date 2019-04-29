@@ -18,6 +18,13 @@ namespace GubGub.Scripts.Main
     {
         #region field
 
+        /// <summary>
+        /// メッセージの表示完了を通知する
+        /// </summary>
+        public Subject<Unit> IsEndMessage => _isEndMessage;
+
+        private readonly Subject<Unit> _isEndMessage = new Subject<Unit>();
+
 
         /// <summary>
         ///  メッセージ送り中か
@@ -88,6 +95,15 @@ namespace GubGub.Scripts.Main
         public void SetAutoButtonState(bool isAuto)
         {
             CurrentView.SetAutoButtonState(isAuto);
+        }
+        
+        /// <summary>
+        /// スキップボタンのトグル状態を設定する
+        /// </summary>
+        /// <param name="isAuto"></param>
+        public void SetSkipButtonState(bool isAuto)
+        {
+            CurrentView.SetSkipButtonState(isAuto);
         }
         
         /// <summary>
@@ -251,6 +267,7 @@ namespace GubGub.Scripts.Main
             InitializeParameter();
 
             SetPageBreakIconVisible(true);
+            _isEndMessage.OnNext(Unit.Default);
         }
 
         /// <summary>

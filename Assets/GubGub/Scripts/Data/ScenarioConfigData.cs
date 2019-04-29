@@ -27,6 +27,15 @@ namespace GubGub.Scripts.Data
         /// </summary>
         public int MinAutoWaitTimeMilliSecond { get; set; }
 
+        /// <summary>
+        ///  スキップ時の一文字あたりの待機時間
+        /// </summary>
+        public int SkipMessageSpeedMilliSecond { get; set; }
+        
+        /// <summary>
+        ///  スキップ時の改ページの最小待ち時間
+        /// </summary>
+        public int MinSkipWaitTimeMilliSecond { get; set; }
 
         public ScenarioConfigData()
         {
@@ -34,6 +43,8 @@ namespace GubGub.Scripts.Data
             MessageSpeedMilliSecond = 30;
             AutoMessageSpeedMilliSecond = 100;
             MinAutoWaitTimeMilliSecond = 1000;
+            SkipMessageSpeedMilliSecond = 20;
+            MinSkipWaitTimeMilliSecond = 200;
         }
     }
 }

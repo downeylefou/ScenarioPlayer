@@ -14,7 +14,7 @@ namespace GubGub.Scripts.View.Interface
         UnityAction OnCloseButton { set; }
         UnityAction OnLogButton { set; }
         UnityAction<bool> OnAutoButton { set; }
-        UnityAction OnSkipButton { set; }
+        UnityAction<bool> OnSkipButton { set; }
 
 
         string MessageText { get; set; }
@@ -25,5 +25,6 @@ namespace GubGub.Scripts.View.Interface
       
         Image NextIcon { get; }
         void SetAutoButtonState(bool isAuto);
+        void SetSkipButtonState(bool isAuto);
     }
 }

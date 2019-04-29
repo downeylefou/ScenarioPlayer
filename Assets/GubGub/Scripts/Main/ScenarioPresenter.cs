@@ -64,6 +64,11 @@ namespace GubGub.Scripts.Main
         /// </summary>
         [SerializeField]
         private bool _isAutoPlaying = true;
+
+        /// <summary>
+        /// スキップ中か
+        /// </summary>
+        private bool _isSkip;
         
         /// <summary>
         ///  コマンド処理中にユーザー入力を止めるためのフラグ
@@ -152,6 +157,8 @@ namespace GubGub.Scripts.Main
             // バックログからのボイス再生通知を監視
             _playVoicePathStream.Subscribe(_ => { Debug.Log(_.ToString()); }).AddTo(this);
 
+            // メッセージの表示完了を監視
+            _viewMediator.MessagePresenter.IsEndMessage.Subscribe(_ => OnEndMessage());
 //            _logDataStream.Subscribe(data => _logDialog.UpdateLog(data)).AddTo(this);
         }
         
@@ -160,7 +167,7 @@ namespace GubGub.Scripts.Main
             _viewMediator.MessagePresenter.View.OnOptionButton = OnOptionButton;
             _viewMediator.MessagePresenter.View.OnAutoButton = OnAutoButton;
             _viewMediator.MessagePresenter.View.OnLogButton = OnLogButton;
-//            _viewMediator.MessagePresenter.View.OnSkipButton = OnSkipButton();
+            _viewMediator.MessagePresenter.View.OnSkipButton = OnSkipButton;
             _viewMediator.MessagePresenter.View.OnCloseButton= OnCloseButton;
         }
 
@@ -295,10 +302,26 @@ namespace GubGub.Scripts.Main
         {
             _isWaitProcess = value;
         }
-
-        #endregion
-
-        #region commandAction
+        
+        /// <summary>
+        /// メッセージ表示完了時、一定のディレイ後、オートやスキップ中なら次に進む
+        /// </summary>
+        private void OnEndMessage()
+        {
+            _messageTimerDisposable?.Dispose();
+            
+            _messageTimerDisposable = Observable
+                .Timer(TimeSpan.FromMilliseconds(GetMinMessageWaitTimeMilliSecond()))
+                .Subscribe(_ =>
+                {
+                    _isProcessingShowMessage = false;
+                    
+                    if (_isAutoPlaying || _isSkip)
+                    {
+                        Forward();
+                    }
+                }).AddTo(this);
+        }
 
         /// <summary>
         /// コマンド完了時
@@ -311,6 +334,39 @@ namespace GubGub.Scripts.Main
                 Forward();
             }
         }
+        
+        /// <summary>
+        /// メッセージの一文字あたりの表示速度を取得する
+        /// </summary>
+        /// <returns></returns>
+        private int GetMessageSpeedMilliSecond()
+        {
+            if (_isSkip)
+            {
+                return _configData.SkipMessageSpeedMilliSecond;
+            }
+            if (_isAutoPlaying)
+            {
+                return _configData.AutoMessageSpeedMilliSecond;
+            }
+
+            return _configData.MessageSpeedMilliSecond;
+        }
+        
+        /// <summary>
+        /// メッセージ表示完了タイマーのウェイト時間を取得する
+        /// </summary>
+        /// <returns></returns>
+        private int GetMinMessageWaitTimeMilliSecond()
+        {
+            return _isSkip ?
+                _configData.MinSkipWaitTimeMilliSecond :
+                _configData.MinAutoWaitTimeMilliSecond;
+        }
+        
+        #endregion
+
+        #region commandAction
 
         private async Task OnClearCommand(BaseScenarioCommand value)
         {
@@ -369,42 +425,27 @@ namespace GubGub.Scripts.Main
         {
             var command = value as MessageCommand;
             PlayVoice(command?.VoiceName, command?.SpeakerName);
-            
+
             _viewMediator.OnShowMessage(
-                command?.Message, command?.SpeakerName, _configData.MessageSpeedMilliSecond);
+                command?.Message, command?.SpeakerName, GetMessageSpeedMilliSecond());
 
             _isProcessingShowMessage = true;
+            _messageTimerDisposable?.Dispose();
             
-            // オートプレイ処理
-            // TODO: ボイスの再生待ちも条件に加える
-            if (command != null)
+            if (_isSkip)
             {
-                var waitTime = Mathf.Max(
-                    _configData.AutoMessageSpeedMilliSecond * command.Message.Length,
-                    _configData.MinAutoWaitTimeMilliSecond);
-
-                _messageTimerDisposable?.Dispose();
-                
-                _messageTimerDisposable = Observable.Timer(TimeSpan.FromSeconds(waitTime / 1000f))
-                    .Subscribe(_ =>
-                {
-                    _isProcessingShowMessage = false;
-                    
-                    if (_isAutoPlaying)
-                    {
-                        Forward();
-                    }
-                });
+                _viewMediator.MessagePresenter.ShowMessageImmediate();
             }
+            
             await Task.CompletedTask;
         }
-
+        
         private async Task OnStandCommand(BaseScenarioCommand value)
         {
             var command = value as StandCommand;
             await _viewMediator.ShowStand(command);
         }
-
+        
         #endregion
 
         #region userInput method
@@ -419,10 +460,19 @@ namespace GubGub.Scripts.Main
                 return;
             }
 
-            _isAutoPlaying = false;
             _isProcessingShowMessage = false;
+            _messageTimerDisposable.Dispose();
 
+            _isAutoPlaying = false;
             _viewMediator.MessagePresenter.SetAutoButtonState(false);
+
+            // スキップ中なら表示を止めるだけにして、次には進まない
+            if (_isSkip)
+            {
+                _isSkip = false;
+                _viewMediator.MessagePresenter.SetSkipButtonState(false);
+                return;
+            }
 
             // メッセージ表示更新中なら、すぐに一括表示させる
             if (_viewMediator.MessagePresenter.IsMessageProcess)
@@ -435,7 +485,7 @@ namespace GubGub.Scripts.Main
                 Debug.Log("OnAnyClick");
             }
         }
-
+        
         /// <summary>
         ///  バックログボタン
         /// </summary>
@@ -458,7 +508,6 @@ namespace GubGub.Scripts.Main
         /// <param name="isAuto"></param>
         private void OnAutoButton(bool isAuto)
         {
-//            _isAutoPlaying = !_isAutoPlaying;
             _isAutoPlaying = isAuto;
             
             // メッセージ表示タイマー終了後にオートプレイになった場合は、すぐに進める
@@ -474,7 +523,20 @@ namespace GubGub.Scripts.Main
         /// <param name="isSkip"></param>
         private void OnSkipButton(bool isSkip)
         {
+            _isSkip = isSkip;
             
+            if (isSkip && !_isWaitProcess)
+            {
+                // メッセージ表示更新中なら、すぐに一括表示させる
+                if (_viewMediator.MessagePresenter.IsMessageProcess)
+                {
+                    _viewMediator.MessagePresenter.ShowMessageImmediate();
+                }
+                else
+                {
+                    Forward();
+                }
+            }
         }
 
         /// <summary>

@@ -14,9 +14,9 @@ namespace GubGub.Scripts.View
         public UnityAction OnCloseButton { get; set; }
         public UnityAction OnLogButton { get; set; }
         public UnityAction<bool> OnAutoButton { get; set; }
-        public UnityAction OnSkipButton { get; set; }
+        public UnityAction<bool> OnSkipButton { get; set; }
 
-        [SerializeField] private Button skipButton;
+        [SerializeField] private Toggle skipButton;
         [SerializeField] private Toggle autoButton;
         [SerializeField] private Button closeButton;
         [SerializeField] private Button optionButton;
@@ -45,7 +45,7 @@ namespace GubGub.Scripts.View
 
         public void Start()
         {
-            skipButton.onClick.AddListener(OnSkipButton);
+            skipButton.onValueChanged.AddListener(OnSkipButton);
             autoButton.onValueChanged.AddListener(OnAutoButton);
             closeButton.onClick.AddListener(OnCloseButton);
             optionButton.onClick.AddListener(OnOptionButton);
@@ -64,6 +64,15 @@ namespace GubGub.Scripts.View
         public void SetAutoButtonState(bool isAuto)
         {
             autoButton.isOn = isAuto;
+        }
+        
+        /// <summary>
+        /// スキップボタンのトグル状態を設定する
+        /// </summary>
+        /// <param name="isAuto"></param>
+        public void SetSkipButtonState(bool isAuto)
+        {
+            skipButton.isOn = isAuto;
         }
     }
 }
