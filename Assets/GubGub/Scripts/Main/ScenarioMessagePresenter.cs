@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
 using GubGub.Scripts.View;
@@ -24,7 +25,6 @@ namespace GubGub.Scripts.Main
         public Subject<Unit> IsEndMessage => _isEndMessage;
 
         private readonly Subject<Unit> _isEndMessage = new Subject<Unit>();
-
 
         /// <summary>
         ///  メッセージ送り中か
@@ -55,6 +55,14 @@ namespace GubGub.Scripts.Main
 
         private EScenarioMessageViewType _type = EScenarioMessageViewType.Default;
 
+        /// <summary>
+        /// メッセージ表示をスキップモードで行うか
+        /// </summary>
+        private bool _isSkipMessage;
+
+        /// <summary>
+        /// メッセージを表示する文字の位置
+        /// </summary>
         private int _currentCharIndex;
 
         private IMessageWindowView CurrentView { get; set; }
@@ -141,23 +149,23 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  メッセージを表示する
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="speakerName"></param>
-        /// <param name="messageSpeed"></param>
-        public void ShowMessage(string message, string speakerName = null, int messageSpeed = 30)
+        /// <param name="messageData"></param>
+        public void ShowMessage(ScenarioMessageData messageData)
         {
-            CurrentView.NameText = speakerName ?? "";
+            CurrentView.NameText = messageData.speakerName ?? "";
 
             InitializeParameter();
-            _originalMessage.Append(message);
+            _originalMessage.Append(messageData.message);
             CurrentView.MessageText = "";
 
             SetPageBreakIconVisible(false);
 
             IsMessageProcess = true;
-            _messageTimer = Observable.Interval(TimeSpan.FromMilliseconds(messageSpeed))
+            _messageTimer = Observable.Interval(TimeSpan.FromMilliseconds(messageData.messageSpeed))
                 .TakeWhile(_ => IsMessageProcess)
                 .Subscribe(_ => OnMessageTimer()).AddTo(this);
+
+            _isSkipMessage = messageData.isSkip;
         }
 
         /// <summary>
@@ -166,6 +174,14 @@ namespace GubGub.Scripts.Main
         public void ShowMessageImmediate()
         {
             OnEndMessageProcess();
+        }
+
+        /// <summary>
+        /// メッセージ表示をスキップ表示状態にする
+        /// </summary>
+        public void EnableMessageSkip()
+        {
+            _isSkipMessage = true;
         }
 
         /// <summary>
@@ -205,12 +221,29 @@ namespace GubGub.Scripts.Main
 
                 _viewMessage.Clear();
                 _currentCharIndex++;
+                
+                // スキップ表示用にインデックスを加算
+                ForwardCharIndexForSkip();
 
                 // 全ての文字を表示しきった
                 if (_currentCharIndex >= _originalMessage.Length)
                 {
                     OnEndMessageProcess();
                 }
+            }
+        }
+
+        /// <summary>
+        /// スキップ表示用に表示位置を加算する
+        /// .NETのタイマーでは一定以上メッセージ速度を早くできないため、
+        /// 同時に表示する文字を増やして対応する
+        /// </summary>
+        private void ForwardCharIndexForSkip()
+        {
+            const int skipIndexNum = 5;
+            if (_isSkipMessage)
+            {
+                _currentCharIndex += skipIndexNum;
             }
         }
 

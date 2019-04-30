@@ -84,6 +84,11 @@ namespace GubGub.Scripts.Main
         /// メッセージ表示タイマーのDisposeable
         /// </summary>
         private IDisposable _messageTimerDisposable;
+        
+        /// <summary>
+        /// メッセージ表示用パラメータ
+        /// </summary>
+        private ScenarioMessageData _messageData = new ScenarioMessageData();
 
         [SerializeField]
         public ScenarioView view;
@@ -259,7 +264,7 @@ namespace GubGub.Scripts.Main
         /// </summary>
         /// <param name="commandName"></param>
         /// <param name="param"></param>
-        public void ProcessCommand(string commandName, List<string> param)
+        private void ProcessCommand(string commandName, List<string> param)
         {
             SetIsWaitProcessState(true);
             _commandExecutor.ProcessCommand(commandName, param);
@@ -425,17 +430,13 @@ namespace GubGub.Scripts.Main
         {
             var command = value as MessageCommand;
             PlayVoice(command?.VoiceName, command?.SpeakerName);
-
-            _viewMediator.OnShowMessage(
-                command?.Message, command?.SpeakerName, GetMessageSpeedMilliSecond());
+            
+            _messageData.SetParam(command?.Message, command?.SpeakerName,
+                GetMessageSpeedMilliSecond(), _isSkip);
+            _viewMediator.OnShowMessage(_messageData);
 
             _isProcessingShowMessage = true;
             _messageTimerDisposable?.Dispose();
-            
-            if (_isSkip)
-            {
-                _viewMediator.MessagePresenter.ShowMessageImmediate();
-            }
             
             await Task.CompletedTask;
         }
@@ -527,10 +528,10 @@ namespace GubGub.Scripts.Main
             
             if (isSkip && !_isWaitProcess)
             {
-                // メッセージ表示更新中なら、すぐに一括表示させる
+                // メッセージ表示更新中なら、スキップ表示に変更させる
                 if (_viewMediator.MessagePresenter.IsMessageProcess)
                 {
-                    _viewMediator.MessagePresenter.ShowMessageImmediate();
+                    _viewMediator.MessagePresenter.EnableMessageSkip();
                 }
                 else
                 {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
 using UniRx;
 using UniRx.Triggers;
@@ -124,12 +125,10 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  メッセージを表示
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="speakerName"></param>
-        /// <param name="messageSpeed"></param>
-        public void ShowMessage(string message, string speakerName, int messageSpeed)
+        /// <param name="messageData"></param>
+        public void ShowMessage(ScenarioMessageData messageData)
         {
-            MessagePresenter.ShowMessage(message, speakerName, messageSpeed);
+            MessagePresenter.ShowMessage(messageData);
         }
 
         /// <summary>

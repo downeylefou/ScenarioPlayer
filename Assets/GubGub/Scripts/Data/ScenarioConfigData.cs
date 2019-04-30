@@ -44,7 +44,7 @@ namespace GubGub.Scripts.Data
             AutoMessageSpeedMilliSecond = 100;
             MinAutoWaitTimeMilliSecond = 1000;
             SkipMessageSpeedMilliSecond = 20;
-            MinSkipWaitTimeMilliSecond = 200;
+            MinSkipWaitTimeMilliSecond = 50;
         }
     }
 }

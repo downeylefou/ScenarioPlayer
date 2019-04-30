@@ -101,13 +101,11 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  メッセージを表示する
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="speakerName"></param>
-        /// <param name="messageSpeed"></param>
+        /// <param name="messageData"></param>
         /// <returns></returns>
-        public void OnShowMessage(string message, string speakerName, int messageSpeed)
+        public void OnShowMessage(ScenarioMessageData messageData)
         {
-            _view.ShowMessage(message, speakerName, messageSpeed);
+            _view.ShowMessage(messageData);
         }
 
         /// <summary>
