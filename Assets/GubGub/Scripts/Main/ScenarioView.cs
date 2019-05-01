@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
+using GubGub.Scripts.View;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -16,6 +17,8 @@ namespace GubGub.Scripts.Main
     /// </summary>
     public class ScenarioView : MonoBehaviour
     {
+        [SerializeField] private BackLogPresenter backLogPresenter;
+
         [SerializeField] private ScenarioMessagePresenter scenarioMessagePresenter;
         [SerializeField] private GameObject backgroundRoot;
         [SerializeField] private GameObject standImageRoot;
@@ -24,6 +27,7 @@ namespace GubGub.Scripts.Main
         [SerializeField] private GameObject messageWindowPosBottom;
         [SerializeField] private GameObject messageWindowPosTop;
         [SerializeField] private GameObject messageWindowPosCenter;
+
 
         /// <summary>
         ///  画面内のどこかをクリックした
@@ -50,6 +54,11 @@ namespace GubGub.Scripts.Main
         /// メッセージビューの管理クラス
         /// </summary>
         public ScenarioMessagePresenter MessagePresenter { get; private set; }
+
+        /// <summary>
+        /// バックログビューの管理クラス
+        /// </summary>
+        public BackLogPresenter BackLogPresenter => backLogPresenter;
 
 
         public async Task Initialize()

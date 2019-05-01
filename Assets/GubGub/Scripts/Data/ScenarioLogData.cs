@@ -12,12 +12,12 @@ namespace GubGub.Scripts.Data
         public string Message { get; private set; }
         public string VoicePath { get; private set; }
 
-        public IObserver<string> PlayVoicePathStream { get; private set; }
+        public IObserver<string> PlayVoiceStream { get; private set; }
 
-        public ScenarioLogData(IObserver<string> playVoicePathStream,
+        public ScenarioLogData(IObserver<string> playVoiceStream,
                                string speakerName, string message, string voicePath)
         {
-            PlayVoicePathStream = playVoicePathStream;
+            PlayVoiceStream = playVoiceStream;
             SpeakerName = speakerName;
             Message = message;
             VoicePath = voicePath;

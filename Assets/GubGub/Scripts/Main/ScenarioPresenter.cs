@@ -35,11 +35,6 @@ namespace GubGub.Scripts.Main
         private readonly ScenarioParser _parser = new ScenarioParser();
 
         /// <summary>
-        ///  バックログからボイス再生パスを通知されるストリーム
-        /// </summary>
-        private readonly Subject<string> _playVoicePathStream = new Subject<string>();
-
-        /// <summary>
         ///  コマンドに対応した処理をビューに行わせるラップクラス
         /// </summary>
         private ScenarioViewMediator _viewMediator;
@@ -52,7 +47,7 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  シナリオ再生時の各種設定
         /// </summary>
-        private ScenarioConfigData _configData = new ScenarioConfigData();
+        private readonly ScenarioConfigData _configData = new ScenarioConfigData();
 
         /// <summary>
         ///  現在参照中のスクリプト行
@@ -63,7 +58,7 @@ namespace GubGub.Scripts.Main
         ///  オートプレイ中か
         /// </summary>
         [SerializeField]
-        private bool _isAutoPlaying = true;
+        private bool isAutoPlaying = true;
 
         /// <summary>
         /// スキップ中か
@@ -81,14 +76,14 @@ namespace GubGub.Scripts.Main
         private bool _isProcessingShowMessage;
         
         /// <summary>
-        /// メッセージ表示タイマーのDisposeable
+        /// メッセージ表示タイマーのDisposable
         /// </summary>
         private IDisposable _messageTimerDisposable;
         
         /// <summary>
         /// メッセージ表示用パラメータ
         /// </summary>
-        private ScenarioMessageData _messageData = new ScenarioMessageData();
+        private readonly ScenarioMessageData _messageData = new ScenarioMessageData();
 
         [SerializeField]
         public ScenarioView view;
@@ -103,13 +98,12 @@ namespace GubGub.Scripts.Main
         /// ビューやパラメータを初期化する
         /// </summary>
         /// <returns></returns>
-        public async Task Initialize()
+        private async Task Initialize()
         {
             await view.Initialize();
             
             _viewMediator = new ScenarioViewMediator(view, _configData);
 
-            await InitializeLogDialog();
             InitializeCommandActions();
             
             Bind();
@@ -160,11 +154,10 @@ namespace GubGub.Scripts.Main
             _commandExecutor.commandEnd.Subscribe(_ => { OnCommandEnd(); }).AddTo(this);
 
             // バックログからのボイス再生通知を監視
-            _playVoicePathStream.Subscribe(_ => { Debug.Log(_.ToString()); }).AddTo(this);
+            _viewMediator.BackLogPresenter.PlayVoiceStream.Subscribe(PlayVoice);
 
             // メッセージの表示完了を監視
             _viewMediator.MessagePresenter.IsEndMessage.Subscribe(_ => OnEndMessage());
-//            _logDataStream.Subscribe(data => _logDialog.UpdateLog(data)).AddTo(this);
         }
         
         private void AddEventListeners()
@@ -174,15 +167,8 @@ namespace GubGub.Scripts.Main
             _viewMediator.MessagePresenter.View.OnLogButton = OnLogButton;
             _viewMediator.MessagePresenter.View.OnSkipButton = OnSkipButton;
             _viewMediator.MessagePresenter.View.OnCloseButton= OnCloseButton;
-        }
 
-        /// <summary>
-        ///  バックログダイアログを初期化する
-        /// </summary>
-        private async Task InitializeLogDialog()
-        {
-//            _logDialog = await ScenarioLogDialogView.Create();
-//            await _logDialog.Initialize(View.transform);
+            _viewMediator.BackLogPresenter.onTouchDimmer = HideBackLog;
         }
 
         /// <summary>
@@ -242,14 +228,6 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
-        ///  シナリオを自動で進行させる
-        /// </summary>
-        private void AutoForward()
-        {
-            Forward();
-        }
-
-        /// <summary>
         ///  シナリオが終了した
         /// </summary>
         private void FinishScenario()
@@ -282,10 +260,10 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  ボイスを再生する
         /// </summary>
-        /// <param name="voiceName"></param>
-        /// <param name="speakerName"></param>
-        private void PlayVoice(string voiceName, string speakerName)
+        /// <param name="voicePath"></param>
+        private void PlayVoice(string voicePath)
         {
+            Debug.Log(voicePath);
         }
 
         /// <summary>
@@ -321,7 +299,7 @@ namespace GubGub.Scripts.Main
                 {
                     _isProcessingShowMessage = false;
                     
-                    if (_isAutoPlaying || _isSkip)
+                    if (isAutoPlaying || _isSkip)
                     {
                         Forward();
                     }
@@ -350,7 +328,7 @@ namespace GubGub.Scripts.Main
             {
                 return _configData.SkipMessageSpeedMilliSecond;
             }
-            if (_isAutoPlaying)
+            if (isAutoPlaying)
             {
                 return _configData.AutoMessageSpeedMilliSecond;
             }
@@ -367,6 +345,14 @@ namespace GubGub.Scripts.Main
             return _isSkip ?
                 _configData.MinSkipWaitTimeMilliSecond :
                 _configData.MinAutoWaitTimeMilliSecond;
+        }
+
+        /// <summary>
+        /// バックログを非表示にする
+        /// </summary>
+        private void HideBackLog()
+        {
+            _viewMediator.HideScenarioLog();
         }
         
         #endregion
@@ -429,11 +415,14 @@ namespace GubGub.Scripts.Main
         private async Task OnMessageCommand(BaseScenarioCommand value)
         {
             var command = value as MessageCommand;
-            PlayVoice(command?.VoiceName, command?.SpeakerName);
+            
+            PlayVoice(command?.VoiceName);
             
             _messageData.SetParam(command?.Message, command?.SpeakerName,
                 GetMessageSpeedMilliSecond(), _isSkip);
             _viewMediator.OnShowMessage(_messageData);
+
+            _viewMediator.AddScenarioLog(command);
 
             _isProcessingShowMessage = true;
             _messageTimerDisposable?.Dispose();
@@ -462,9 +451,9 @@ namespace GubGub.Scripts.Main
             }
 
             _isProcessingShowMessage = false;
-            _messageTimerDisposable.Dispose();
+            _messageTimerDisposable?.Dispose();
 
-            _isAutoPlaying = false;
+            isAutoPlaying = false;
             _viewMediator.MessagePresenter.SetAutoButtonState(false);
 
             // スキップ中なら表示を止めるだけにして、次には進まない
@@ -490,9 +479,9 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  バックログボタン
         /// </summary>
-        private async void OnLogButton()
+        private void OnLogButton()
         {
-//            ShowBackLogDialog();
+            _viewMediator.ShowScenarioLog();
         }
 
         /// <summary>
@@ -509,10 +498,10 @@ namespace GubGub.Scripts.Main
         /// <param name="isAuto"></param>
         private void OnAutoButton(bool isAuto)
         {
-            _isAutoPlaying = isAuto;
+            isAutoPlaying = isAuto;
             
             // メッセージ表示タイマー終了後にオートプレイになった場合は、すぐに進める
-            if (_isAutoPlaying && !_isProcessingShowMessage)
+            if (isAutoPlaying && !_isProcessingShowMessage)
             {
                 Forward();
             }

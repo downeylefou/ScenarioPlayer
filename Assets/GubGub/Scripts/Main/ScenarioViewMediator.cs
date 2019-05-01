@@ -6,6 +6,7 @@ using GubGub.Scripts.Command;
 using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
+using GubGub.Scripts.View;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -25,6 +26,8 @@ namespace GubGub.Scripts.Main
 
 
         public ScenarioMessagePresenter MessagePresenter => _view.MessagePresenter;
+
+        public BackLogPresenter BackLogPresenter => _view.BackLogPresenter;
 
         public readonly Subject<PointerEventData> onAnyClick = new Subject<PointerEventData>();
 
@@ -238,6 +241,31 @@ namespace GubGub.Scripts.Main
             }
         }
 
+        /// <summary>
+        /// シナリオバックログにログデータを追加する
+        /// </summary>
+        /// <param name="command"></param>
+        public void AddScenarioLog(MessageCommand command)
+        {
+            BackLogPresenter.AddScenarioLog(command);
+        }
+        
+        /// <summary>
+        /// シナリオバックログを表示する
+        /// </summary>
+        public void ShowScenarioLog()
+        {
+            BackLogPresenter.Show();
+        }
+        
+        /// <summary>
+        /// シナリオバックログを非表示にする
+        /// </summary>
+        public void HideScenarioLog()
+        {
+            BackLogPresenter.Hide();
+        }
+        
         #endregion
 
         #region private method
