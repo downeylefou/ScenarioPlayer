@@ -39,6 +39,8 @@ namespace GubGub.Scripts.View
         private void Awake()
         {
             AddEventListener();
+            
+            Hide();
         }
 
         public void Show()
