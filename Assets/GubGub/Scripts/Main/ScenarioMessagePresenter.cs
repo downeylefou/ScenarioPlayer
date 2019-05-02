@@ -41,6 +41,8 @@ namespace GubGub.Scripts.Main
         /// </summary>
         [SerializeField] private DefaultMessageWindowView defaultMessageWindowView;
 
+        [SerializeField] private CanvasGroup _canvasGroup;
+
         /// <summary>
         /// 入力されたテキストのビルダー
         /// </summary>
@@ -184,6 +186,14 @@ namespace GubGub.Scripts.Main
             _isSkipMessage = true;
         }
 
+        /// <summary>
+        /// メッセージウィンドウ全体の操作状態を設定する
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetInteractable(bool value)
+        {
+            _canvasGroup.interactable = value;
+        }
         /// <summary>
         /// ウィンドウタイプよってウィンドウを切り替える
         /// </summary>

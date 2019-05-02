@@ -199,7 +199,9 @@ namespace GubGub.Scripts.Main
         /// <param name="command"></param>
         public async Task FadeOut(FadeOutCommand command)
         {
+            MessagePresenter.SetInteractable(false);
             await FadeScreen(GetColorByString(command.colorString), command.fadeMilliSecond, command.alpha);
+            MessagePresenter.SetInteractable(true);
         }
 
         /// <summary>
@@ -208,7 +210,9 @@ namespace GubGub.Scripts.Main
         /// <param name="command"></param>
         public async Task FadeIn(FadeInCommand command)
         {
+            MessagePresenter.SetInteractable(false);
             await FadeScreen(GetColorByString(command.colorString), command.fadeMilliSecond, command.alpha);
+            MessagePresenter.SetInteractable(true);
         }
 
         /// <summary>
