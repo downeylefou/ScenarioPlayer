@@ -8,6 +8,7 @@ using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
 using GubGub.Scripts.Parser;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 
 namespace GubGub.Scripts.Main
@@ -314,6 +315,7 @@ namespace GubGub.Scripts.Main
             if (!_isProcessingShowMessage)
             {
                 SetIsWaitProcessState(false);
+
                 Forward();
             }
         }
@@ -445,6 +447,15 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private void OnAnyClick()
         {
+            var tempIsSkip = _isSkip;
+            
+            // ユーザー操作を止めている間も、オートとスキップ状態の解除は行う
+            isAutoPlaying = false;
+            _viewMediator.MessagePresenter.SetAutoButtonState(false);
+            
+            _isSkip = false;
+            _viewMediator.MessagePresenter.SetSkipButtonState(false);
+            
             if (_isWaitProcess)
             {
                 return;
@@ -453,14 +464,9 @@ namespace GubGub.Scripts.Main
             _isProcessingShowMessage = false;
             _messageTimerDisposable?.Dispose();
 
-            isAutoPlaying = false;
-            _viewMediator.MessagePresenter.SetAutoButtonState(false);
-
-            // スキップ中なら表示を止めるだけにして、次には進まない
-            if (_isSkip)
+            // スキップ中だったなら表示を止めるだけにして、次には進まない
+            if (tempIsSkip)
             {
-                _isSkip = false;
-                _viewMediator.MessagePresenter.SetSkipButtonState(false);
                 return;
             }
 
@@ -472,7 +478,6 @@ namespace GubGub.Scripts.Main
             else
             {
                 Forward();
-                Debug.Log("OnAnyClick");
             }
         }
         
@@ -524,6 +529,8 @@ namespace GubGub.Scripts.Main
                 }
                 else
                 {
+                    // メッセージを表示しきっている状態なので、すぐ次に進める
+                    _isProcessingShowMessage = false;
                     Forward();
                 }
             }
