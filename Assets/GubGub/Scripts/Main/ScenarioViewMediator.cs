@@ -354,15 +354,8 @@ namespace GubGub.Scripts.Main
             // サイズ調整
             image.SetNativeSize();
 
-//            float sizeAdjustPer = 0.6f;
-//            float spriteWidth = image.sprite.rect.width * sizeAdjustPer;
-//            float spriteHeight = image.sprite.rect.height * sizeAdjustPer;
-//
             var rect = standObj.GetComponent<RectTransform>();
-//            rect.anchorMax = rect.anchorMin;
-//            rect.sizeDelta = new Vector2(spriteWidth, spriteHeight);
-//            rect.SetScale(Vector3.one);
-
+            rect.SetScale(Vector3.one);
 
             // 座標調整
             var xCenter = 0;
@@ -376,10 +369,11 @@ namespace GubGub.Scripts.Main
                 xCenter += StandSideOffset;
             }
 
-            var pos = rect.anchoredPosition;
+            var pos = rect.anchoredPosition3D;
             pos.x = xCenter + command.OffsetX;
             pos.y = StandOffsetY + command.OffsetY;
-            rect.anchoredPosition = pos;
+            pos.z = 0;
+            rect.anchoredPosition3D = pos;
         }
 
         /// <summary>

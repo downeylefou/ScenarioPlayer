@@ -53,8 +53,8 @@ namespace GubGub.Scripts.Main
         /// <summary>
         /// メッセージビューの管理クラス
         /// </summary>
-        public ScenarioMessagePresenter MessagePresenter { get; private set; }
-
+        public ScenarioMessagePresenter MessagePresenter => scenarioMessagePresenter;
+        
         /// <summary>
         /// バックログビューの管理クラス
         /// </summary>
@@ -78,7 +78,6 @@ namespace GubGub.Scripts.Main
         /// <returns></returns>
         private async Task InitializeMessageView()
         {
-            MessagePresenter = Instantiate(scenarioMessagePresenter, transform);
             await MessagePresenter.Initialize();
             
             // メッセージビューを初期位置に配置
