@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GubGub.Scripts.Enum;
+using GubGub.Scripts.Lib;
 using UniRx;
 using UnityEngine;
 
@@ -23,6 +25,11 @@ namespace GubGub.Scripts.Main
         /// シナリオのロードが完了すると、自動的に再生を始める
         /// </summary>
         [SerializeField] private bool isAutoPlay;
+        
+        /// <summary>
+        /// リソースの読み込み先
+        /// </summary>
+        [SerializeField] private EResourceLoadType resourceLoadType;
 
         /// <summary>
         /// シナリオ終了を通知するストリーム
@@ -37,8 +44,9 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private async void Awake()
         {
+            ResourceLoadSetting.ResourceLoadType = resourceLoadType;
+
             Bind();
-            
             if (loadOnAwake)
             {
                 await LoadScenario();

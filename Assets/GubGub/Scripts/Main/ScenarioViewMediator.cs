@@ -402,7 +402,7 @@ namespace GubGub.Scripts.Main
         private async Task<Sprite> GetBackgroundSprite(string imageName)
         {
             return await ResourceManager.LoadSprite(
-                ResourcePathSetting.BackgroundResourcePrefix + imageName);
+                ResourceLoadSetting.BackgroundResourcePrefix + imageName);
         }
 
         /// <summary>
@@ -413,7 +413,7 @@ namespace GubGub.Scripts.Main
         private async Task<Sprite> GetStandImageSprite(string imageName)
         {
             return await ResourceManager.LoadSprite(
-                ResourcePathSetting.StandResourcePrefix + imageName);
+                ResourceLoadSetting.StandResourcePrefix + imageName);
         }
 
         /// <summary>

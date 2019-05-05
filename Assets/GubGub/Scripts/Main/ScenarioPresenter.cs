@@ -128,7 +128,7 @@ namespace GubGub.Scripts.Main
         {
             // シナリオの読み込み
             var scenario = await ResourceManager.LoadText(
-                ResourcePathSetting.ScenarioResourcePrefix + loadScenarioPath);
+                ResourceLoadSetting.ScenarioResourcePrefix + loadScenarioPath);
             ParseScenario(scenario);
 
             // TODO: リソースの事前読み込み
@@ -389,14 +389,14 @@ namespace GubGub.Scripts.Main
         private async Task OnBgmCommand(BaseScenarioCommand value)
         {
             var command = value as BgmCommand;
-            SoundManager.PlayBgm(ResourcePathSetting.BgmResourcePrefix + command?.FileName);
+            SoundManager.PlayBgm(ResourceLoadSetting.BgmResourcePrefix + command?.FileName);
             await Task.CompletedTask;
         }
         
         private async Task OnSeCommand(BaseScenarioCommand value)
         {
             var command = value as SeCommand;
-            SoundManager.PlaySe(ResourcePathSetting.SeResourcePrefix + command?.FileName);
+            SoundManager.PlaySe(ResourceLoadSetting.SeResourcePrefix + command?.FileName);
             await Task.CompletedTask;
         }
         
