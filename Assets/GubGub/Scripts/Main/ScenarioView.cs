@@ -20,6 +20,7 @@ namespace GubGub.Scripts.Main
         [SerializeField] private BackLogPresenter backLogPresenter;
 
         [SerializeField] private ScenarioMessagePresenter scenarioMessagePresenter;
+
         [SerializeField] private GameObject backgroundRoot;
         [SerializeField] private GameObject standImageRoot;
         [SerializeField] private GameObject clickArea;
@@ -43,7 +44,7 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  立ち位置と、そこに表示されている立ち絵オブジェクトのリスト
         /// </summary>
-        private Dictionary<EScenarioStandPosition, GameObject> _standImages =
+        private readonly Dictionary<EScenarioStandPosition, GameObject> _standImages =
             new Dictionary<EScenarioStandPosition, GameObject>()
             {
                 {EScenarioStandPosition.Left, null}, {EScenarioStandPosition.Center, null},
@@ -108,6 +109,8 @@ namespace GubGub.Scripts.Main
         public void ResetView()
         {
             MessagePresenter.ClearText();
+            RemoveAllStand();
+            RemoveImage();
         }
         
         /// <summary>
@@ -148,7 +151,7 @@ namespace GubGub.Scripts.Main
         {
             imageObj.transform.SetParent(backgroundRoot.transform);
         }
-
+ 
         /// <summary>
         ///  立ち絵オブジェクトを追加
         /// </summary>
@@ -177,7 +180,7 @@ namespace GubGub.Scripts.Main
         /// <returns></returns>
         public void RemoveStand(EScenarioStandPosition position)
         {
-            Destroy(_standImages[position].gameObject);
+            Destroy(_standImages[position]?.gameObject);
         }
 
         /// <summary>
@@ -190,5 +193,31 @@ namespace GubGub.Scripts.Main
         }
         
         #endregion
+        
+        /// <summary>
+        /// 全ての立ち絵を削除
+        /// </summary>
+        private void RemoveAllStand()
+        {
+            RemoveStand(EScenarioStandPosition.Left);
+            RemoveStand(EScenarioStandPosition.Center);
+            RemoveStand(EScenarioStandPosition.Right);
+        }
+
+        /// <summary>
+        /// 全ての背景を削除
+        /// </summary>
+        private void RemoveImage()
+        {
+            foreach (var child in backgroundRoot.transform.GetComponentsInChildren<Transform>())
+            {
+                if (child != backgroundRoot.transform)
+                {
+                    Destroy(child.gameObject);
+                }
+            }
+            
+            backgroundRoot.transform.DetachChildren();
+        }
     }
 }

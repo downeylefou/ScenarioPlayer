@@ -89,6 +89,17 @@ namespace GubGub.Scripts.Main
         public void ResetView()
         {
             _view.ResetView();
+
+            // _currentStandNamesを直接foreachで回すと、値が変更できないため、対応する定数リストで回す
+            foreach (var position in EScenarioStandPositionExtension.NameList.Keys)
+            {
+                if (_currentStandNames.ContainsKey(position))
+                {
+                    _currentStandNames[position] = "";
+                }
+            }
+
+            _currentImageName = ""; 
         }
         
         /// <summary>

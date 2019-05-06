@@ -18,7 +18,7 @@ namespace GubGub.Scripts.Enum
     /// </summary>
     internal static class EScenarioStandPositionExtension
     {
-        private static readonly Dictionary<EScenarioStandPosition, string> NameList =
+        public static Dictionary<EScenarioStandPosition, string> NameList { get; private set; }=
             new Dictionary<EScenarioStandPosition, string>()
             {
                 {EScenarioStandPosition.Left, "left"},
