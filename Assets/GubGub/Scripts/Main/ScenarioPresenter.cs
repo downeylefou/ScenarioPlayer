@@ -8,7 +8,7 @@ using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
 using GubGub.Scripts.Parser;
 using UniRx;
-using UniRx.Triggers;
+using UniRx.Async;
 using UnityEngine;
 
 namespace GubGub.Scripts.Main
@@ -123,15 +123,29 @@ namespace GubGub.Scripts.Main
         /// シナリオ、リソースの読み込みを行う
         /// </summary>
         /// <param name="loadScenarioPath"></param>
+        /// <param name="isResourcePreload"></param>
         /// <returns></returns>
-        public async Task LoadScenario(string loadScenarioPath)
+        public async Task LoadScenario(string loadScenarioPath, bool isResourcePreload)
         {
             // シナリオの読み込み
             var scenario = await ResourceManager.LoadText(
                 ResourceLoadSetting.ScenarioResourcePrefix + loadScenarioPath);
             ParseScenario(scenario);
 
-            // TODO: リソースの事前読み込み
+            // リソースの事前読み込み
+            if (isResourcePreload)
+            {
+                await ResourcePreload();
+            }
+        }
+
+        /// <summary>
+        /// アセットバンドルの事前読み込みを行う
+        /// </summary>
+        /// <returns></returns>
+        private async UniTask ResourcePreload()
+        {
+            await ResourceManager.StartBulkLoad(_parser.GetResourceList());
         }
 
         /// <summary>

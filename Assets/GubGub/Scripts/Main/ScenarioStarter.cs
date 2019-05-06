@@ -25,12 +25,22 @@ namespace GubGub.Scripts.Main
         /// シナリオのロードが完了すると、自動的に再生を始める
         /// </summary>
         [SerializeField] private bool isAutoPlay;
+
+        /// <summary>
+        /// リソースのアセットバンドルを再生前にロードしておくか
+        /// </summary>
+        [SerializeField] private bool isResourcePreload;
         
         /// <summary>
         /// リソースの読み込み先
         /// </summary>
         [SerializeField] private EResourceLoadType resourceLoadType;
 
+        /// <summary>
+        /// アセットバンドル末尾の拡張子
+        /// </summary>
+        [SerializeField] private string assetbundleSuffix;
+        
         /// <summary>
         /// シナリオ終了を通知するストリーム
         /// </summary>
@@ -44,9 +54,12 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private async void Awake()
         {
+            // 設定クラスにスタータの入力値を入れる
             ResourceLoadSetting.ResourceLoadType = resourceLoadType;
+            ResourceLoadSetting.AssetBundleSuffix = assetbundleSuffix;
 
             Bind();
+            
             if (loadOnAwake)
             {
                 await LoadScenario();
@@ -79,8 +92,12 @@ namespace GubGub.Scripts.Main
             {
                 loadScenarioPath = scenarioFilePath;
             }
+
+            // ローカル読み込みならプリロードは行わない
+            var isPreload = (isResourcePreload &&
+                             !resourceLoadType.Equals(EResourceLoadType.Resources));
             
-            await presenter.LoadScenario(loadScenarioPath);
+            await presenter.LoadScenario(loadScenarioPath, isPreload);
                             
             if (isAutoPlay)
             {

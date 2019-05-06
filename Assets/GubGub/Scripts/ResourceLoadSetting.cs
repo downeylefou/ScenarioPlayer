@@ -7,15 +7,22 @@ namespace GubGub.Scripts
     /// </summary>
     public static class ResourceLoadSetting
     {
+        // アセットバンドルのルートからファイル名までのディレクトリパス
         public static string BackgroundResourcePrefix = "texture/background/";
         public static string StandResourcePrefix = "texture/character/";
         public static string BgmResourcePrefix = "sound/bgm/";
         public static string SeResourcePrefix = "sound/se/";
+        public static string VoiceResourcePrefix = "sound/voice/";
         public static string ScenarioResourcePrefix = "scenario/";
         
         /// <summary>
         /// リソースの読み込み先
         /// </summary>
         public static EResourceLoadType ResourceLoadType { get; set; }
+        
+        /// <summary>
+        /// アセットバンドル末尾の拡張子
+        /// </summary>
+        public static string AssetBundleSuffix { get; set; }
     }
 }
