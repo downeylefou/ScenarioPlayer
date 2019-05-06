@@ -7,24 +7,25 @@ namespace GubGub.Scripts.Parser
 {
     /// <inheritdoc />
     /// <summary>
-    ///  TSVファイルスクリプトのパーサー
+    /// TSVファイルスクリプトのパーサー
+    /// スクリプト中のリソースファイル名のリストを持つ
     /// </summary>
     public class ScenarioParser : IScriptParser
     {
         private static readonly char[] LineBreak = "\r\n".ToCharArray();
         private static readonly char[] CommandDelimiter = "\t".ToCharArray();
 
-        private readonly List<string> _resourceNames = new List<string>();
-        // private string _resourceDirectory;
+        private readonly Dictionary<string, EResourceType> _resourceList =
+            new Dictionary<string, EResourceType>();
 
 
         /// <summary>
-        ///  リソース名リストを取得する
+        ///  リソースリストを取得する
         /// </summary>
         /// <returns></returns>
-        public List<string> GetResourceNames()
+        public Dictionary<string, EResourceType> GetResourceList()
         {
-            return _resourceNames;
+            return _resourceList;
         }
 
         /// <summary>
@@ -49,60 +50,59 @@ namespace GubGub.Scripts.Parser
         private List<string> ParseLine(string line)
         {
             var values = line.Split(CommandDelimiter).ToList();
-            PushResources(values);
+            PushResourceName(values);
 
             return values;
         }
 
         /// <summary>
-        /// 行を分割した配列からリソースを取得しresourceNamesに追加する
+        /// 行を分割した配列からリソース名を取得し、リストに追加する
         /// </summary>
         /// <param name="values"></param>
-        private void PushResources(List<string> values)
+        private void PushResourceName(List<string> values)
         {
             var command = EScenarioCommandTypeExtension.GetEnum(values[0]);
-            var urlList = new List<string>();
 
             switch (command)
             {
                 case EScenarioCommandType.Image:
-                    // case EScenarioCommandType.MOVIE:
-                    // case EScenarioCommandType.BGM:
-                    // case EScenarioCommandType.SE:
-                    urlList.Add(values[1]);
+                    AddResource(values[1], EResourceType.Background);
+                    break;
+                case EScenarioCommandType.Bgm:
+                    AddResource(values[1], EResourceType.Bgm);
+                    break;
+                case EScenarioCommandType.Se:
+                    AddResource(values[1], EResourceType.Se);
                     break;
                 case EScenarioCommandType.Stand:
-                    urlList.Add(values[2]);
+                    AddResource(values[2], EResourceType.Stand);
                     break;
-                // case EScenarioCommandType.START:
-                //     urlList.push(values[2]);
-                //     urlList.push(values[3]);
-                //     break;
                 case EScenarioCommandType.Unknown:
                     if (values[0] == "")
                     {
-                        // 会話メッセージの場合
+                        // 会話メッセージの場合    ボイスパスを取得
                         if (values.Count > 1 && values[1] != null && values[1].Length > 0)
                         {
-                            urlList.Add(values[1]);
+                            AddResource(values[1], EResourceType.Voice);
                         }
                     }
 
                     break;
             }
-
-            _resourceNames.Concat(urlList.Where(ValidateResourceUrl).Select(x => x).ToList());
         }
 
         /// <summary>
-        /// 正常なリソースパスか判定する
+        /// リソースリストに追加する
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="resourceName"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        private static bool ValidateResourceUrl(string value)
+        private void AddResource(string resourceName, EResourceType type)
         {
-          
-            return true;
+            if (!string.IsNullOrEmpty(resourceName) && !_resourceList.ContainsKey(resourceName))
+            {
+                _resourceList.Add(resourceName, type);
+            }
         }
     }
 }

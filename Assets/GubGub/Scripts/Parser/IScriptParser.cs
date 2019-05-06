@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GubGub.Scripts.Enum;
 
 namespace GubGub.Scripts.Parser
 {
@@ -8,6 +9,6 @@ namespace GubGub.Scripts.Parser
     public interface IScriptParser
     {
         List<List<string>> ParseScript(string scriptUrl, string rawScript);
-        List<string> GetResourceNames();
+        Dictionary<string, EResourceType> GetResourceList();
     }
 }
