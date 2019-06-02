@@ -39,18 +39,22 @@ namespace GubGub.Scripts.Data
         }
 
         /// <summary>
-        ///  指定ラベルにジャンプする
+        /// 指定ラベルにジャンプし、行の情報を取得する
         /// </summary>
         /// <param name="labelName"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public List<string> GotoLabel(string labelName)
+        public List<string> GetLineForJumpToLabel(string labelName)
         {
+            const int commandNameColumnIndex = 0;
+            const int labelNameColumnIndex = 1;
             var enumLabelName = EScenarioCommandType.Label.GetName();
 
             for (var i = 0; i < _lineList.Count; i++)
             {
-                if (_lineList[0][0] == enumLabelName && _lineList[0][1] == labelName)
+                // "label ラベル名"となっている行を探す
+                if (_lineList[i][commandNameColumnIndex] == 
+                    enumLabelName && _lineList[i][labelNameColumnIndex] == labelName)
                 {
                     _lineIndex = i;
                     return _lineList[_lineIndex];

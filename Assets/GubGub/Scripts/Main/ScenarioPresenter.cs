@@ -201,6 +201,8 @@ namespace GubGub.Scripts.Main
             _commandExecutor.AddCommand(EScenarioCommandType.Clear, OnClearCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Se, OnSeCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Bgm, OnBgmCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.Jump, OnJumpCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.Label, OnLabelCommand);
         }
 
         /// <summary>
@@ -217,11 +219,12 @@ namespace GubGub.Scripts.Main
         #region private method
 
         /// <summary>
-        ///  シナリオを進行させる
+        /// シナリオを進行させる
         /// </summary>
-        private void Forward()
+        /// <param name="jumpLine">ジャンプする際の行データ</param>
+        private void Forward(List<string> jumpLine = null)
         {
-            _currentLine = _parseData.GetCurrentLineAndAdvanceNumber();
+            _currentLine = jumpLine ?? _parseData.GetCurrentLineAndAdvanceNumber();
 
             if (_currentLine == null || _currentLine.Count <= 0)
             {
@@ -326,6 +329,7 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private void OnCommandEnd()
         {
+            // メッセージコマンドは即終了状態になるが、クリック待ちを行うため、次の行には進まない
             if (!_isProcessingShowMessage)
             {
                 SetIsWaitProcessState(false);
@@ -374,7 +378,22 @@ namespace GubGub.Scripts.Main
         #endregion
 
         #region commandAction
+        
+        private async Task OnLabelCommand(BaseScenarioCommand value)
+        {
+            // 何もしない
+            await Task.CompletedTask;
+        }
+        
+        private async Task OnJumpCommand(BaseScenarioCommand value)
+        {
+            var command = value as JumpCommand;
+            SetIsWaitProcessState(false);
 
+            var line = _parseData.GetLineForJumpToLabel(command.LabelName);
+            Forward(line);
+        }
+        
         private async Task OnClearCommand(BaseScenarioCommand value)
         {
             var command = value as ClearCommand;

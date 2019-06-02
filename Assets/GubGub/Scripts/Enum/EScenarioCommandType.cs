@@ -20,6 +20,7 @@ namespace GubGub.Scripts.Enum
         Clear,
         Se,
         Bgm,
+        Jump,
     }
 
     /// <summary>
@@ -42,6 +43,7 @@ namespace GubGub.Scripts.Enum
                 {EScenarioCommandType.Clear, "clear"},
                 {EScenarioCommandType.Se, "se"},
                 {EScenarioCommandType.Bgm, "bgm"},
+                {EScenarioCommandType.Jump, "jump"},
             };
 
         /// <summary>
