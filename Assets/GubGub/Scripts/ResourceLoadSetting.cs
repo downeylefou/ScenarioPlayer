@@ -24,5 +24,10 @@ namespace GubGub.Scripts
         /// アセットバンドル末尾の拡張子
         /// </summary>
         public static string AssetBundleSuffix { get; set; }
+        
+        /// <summary>
+        /// リソースを取得するサーバーのホスト
+        /// </summary>
+        public static string ServerHostUrl { get; set; }
     }
 }

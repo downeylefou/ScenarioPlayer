@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GubGub.Scripts.Enum;
-using GubGub.Scripts.Lib;
 using UniRx;
 using UnityEngine;
 
@@ -12,8 +11,19 @@ namespace GubGub.Scripts.Main
     /// </summary>
     public class ScenarioStarter : MonoBehaviour
     {
+        /// <summary>
+        /// 読み込むシナリオのパス
+        /// </summary>
         [SerializeField] private string loadScenarioPath;
 
+        /// <summary>
+        /// リソースを取得するサーバーのホスト
+        /// </summary>
+        [SerializeField] private string serverHostUrl;
+        
+        /// <summary>
+        /// シナリオプレイヤーのメインプレゼンター
+        /// </summary>
         [SerializeField] private ScenarioPresenter presenter;
 
         /// <summary>
@@ -54,16 +64,23 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private async void Awake()
         {
-            // 設定クラスにスタータの入力値を入れる
-            ResourceLoadSetting.ResourceLoadType = resourceLoadType;
-            ResourceLoadSetting.AssetBundleSuffix = assetbundleSuffix;
-
+            InitializeResourceLoadSetting();
             Bind();
             
             if (loadOnAwake)
             {
                 await LoadScenario();
             }
+        }
+
+        /// <summary>
+        /// 設定クラスにスタータの入力値を入れる
+        /// </summary>
+        private void InitializeResourceLoadSetting()
+        {
+            ResourceLoadSetting.ResourceLoadType = resourceLoadType;
+            ResourceLoadSetting.AssetBundleSuffix = assetbundleSuffix;
+            ResourceLoadSetting.ServerHostUrl = serverHostUrl;
         }
 
         private void Bind()

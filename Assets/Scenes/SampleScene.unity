@@ -948,7 +948,7 @@ PrefabInstance:
     - target: {fileID: 4333982352977935144, guid: 591b7b89d3882e24a9a8ae47cc7c9b40,
         type: 3}
       propertyPath: resourceLoadType
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4333982352977935144, guid: 591b7b89d3882e24a9a8ae47cc7c9b40,
         type: 3}
@@ -959,6 +959,11 @@ PrefabInstance:
         type: 3}
       propertyPath: assetbundleSuffix
       value: .asset
+      objectReference: {fileID: 0}
+    - target: {fileID: 4333982352977935144, guid: 591b7b89d3882e24a9a8ae47cc7c9b40,
+        type: 3}
+      propertyPath: serverHostUrl
+      value: http://localhost:8000/
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 591b7b89d3882e24a9a8ae47cc7c9b40, type: 3}

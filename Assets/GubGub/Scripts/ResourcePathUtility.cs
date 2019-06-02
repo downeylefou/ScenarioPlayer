@@ -14,7 +14,7 @@ namespace GubGub.Scripts
     {
         private static readonly StringBuilder StringBuilder = new StringBuilder(300);
         
-        private static Dictionary<EResourceType, string> _prefixList =
+        private static readonly Dictionary<EResourceType, string> PrefixList =
             new Dictionary<EResourceType, string>()
             {
                 {EResourceType.Background, ResourceLoadSetting.BackgroundResourcePrefix},
@@ -42,7 +42,7 @@ namespace GubGub.Scripts
         {
             StringBuilder.Clear();
 
-            StringBuilder.Append(_prefixList.FirstOrDefault(data => data.Key.Equals(type)).Value);
+            StringBuilder.Append(PrefixList.FirstOrDefault(data => data.Key.Equals(type)).Value);
             StringBuilder.Append(filePath);
 
             return StringBuilder.ToString();
@@ -57,9 +57,9 @@ namespace GubGub.Scripts
         {
             StringBuilder.Clear();
 
-            // プラットフォームごとの StreamingAssetsのパス
             if (ResourceLoadSetting.ResourceLoadType == EResourceLoadType.StreamingAssets)
             {
+                // プラットフォームごとの StreamingAssetsのパス
                 #if UNITY_EDITOR || WebPlayer
                 StringBuilder.Append(Application.dataPath);
                 StringBuilder.Append("/StreamingAssets/");
@@ -69,6 +69,10 @@ namespace GubGub.Scripts
                 _stringBuilder.Append(Application.dataPath);
                 _stringBuilder.Append("!/assets/");
                 #endif
+            }
+            else if (ResourceLoadSetting.ResourceLoadType == EResourceLoadType.Server)
+            {
+                StringBuilder.Append(ResourceLoadSetting.ServerHostUrl);
             }
             
             // アセットバンドルのターゲット名

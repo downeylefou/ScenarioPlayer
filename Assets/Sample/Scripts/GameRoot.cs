@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using GubGub.Scripts;
+using GubGub.Scripts.Lib;
 using GubGub.Scripts.Main;
 using UniRx;
 using UnityEngine;
@@ -34,18 +36,19 @@ namespace Sample.Scripts
 
         private void InitializeScenario()
         {
-            _scenarioPathList.Add("test_scenario");
-            _scenarioPathList.Add("test_scenario2");
+            _scenarioPathList.Add("test/test_scenario2");
+            _scenarioPathList.Add("test/test_scenario");
         
             PlayScenario();
         }
 
         private async void PlayScenario()
         {
-            if (_scenarioPathList.Count > _scenarioCount)
-            {
-                await _scenarioStarter.LoadScenario(_scenarioPathList[_scenarioCount]);
-            }
+//            if (_scenarioPathList.Count > _scenarioCount)
+//            {
+//                await _scenarioStarter.LoadScenario(_scenarioPathList[_scenarioCount]);
+//            }
+            await _scenarioStarter.LoadScenario();
         }
 
         /// <summary>
