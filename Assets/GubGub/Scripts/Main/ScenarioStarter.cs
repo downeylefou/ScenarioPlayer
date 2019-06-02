@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GubGub.Scripts.Enum;
+using GubGub.Scripts.Lib;
 using UniRx;
 using UnityEngine;
 
@@ -94,6 +95,9 @@ namespace GubGub.Scripts.Main
         private void OnScenarioEnd()
         {
             presenter.Hide();
+            
+            // リソースを解放
+            ResourceManager.UnloadAllAsset();
             
             _isEndScenario.OnNext(Unit.Default);
         }

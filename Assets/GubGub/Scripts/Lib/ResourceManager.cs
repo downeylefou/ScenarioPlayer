@@ -52,6 +52,19 @@ namespace GubGub.Scripts.Lib
         {
             return await LoadAssetAsync<TextAsset>(filePath);
         }
+        
+        /// <summary>
+        /// ロード済みアセットバンドルをすべて解放する
+        /// </summary>
+        /// <param name="unloadAllLoadedObjects">取り出したアセットも解放するか</param>
+        public static void UnloadAllAsset(bool unloadAllLoadedObjects = false)
+        {
+            foreach (var loadedAssetBundle in LoadedAssetBundles)
+            {
+                loadedAssetBundle.Value.Unload(unloadAllLoadedObjects);
+            }
+            LoadedAssetBundles.Clear();
+        }
 
         /// <summary>
         /// リソースの一括読み込みを行う
@@ -134,7 +147,7 @@ namespace GubGub.Scripts.Lib
 
             if (request.Result.isHttpError || request.Result.isNetworkError)
             {
-                Debug.LogError(request.Result.error + ":" + filePath);
+                Debug.LogError(request.Result.error + ":" + request.Result.url);
                 return false;
             }
             
