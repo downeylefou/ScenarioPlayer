@@ -25,10 +25,24 @@ namespace GubGub.Scripts.Main
         private const int StandSideOffset = 300; // 左右の立ち位置の中心を画面中心から振る距離
 
 
+        /// <summary>
+        /// メッセージビューの管理クラス
+        /// </summary>
         public ScenarioMessagePresenter MessagePresenter => _view.MessagePresenter;
 
+        /// <summary>
+        /// バックログビューの管理クラス
+        /// </summary>
         public BackLogPresenter BackLogPresenter => _view.BackLogPresenter;
 
+        /// <summary>
+        /// 選択肢ビューの管理クラス
+        /// </summary>
+        public ScenarioSelectionPresenter SelectionPresenter => _view.SelectionPresenter;
+
+        /// <summary>
+        /// 画面をクリックしたことを通知する
+        /// </summary>
         public readonly Subject<PointerEventData> onAnyClick = new Subject<PointerEventData>();
 
         /// <summary>

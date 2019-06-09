@@ -21,6 +21,8 @@ namespace GubGub.Scripts.Main
 
         [SerializeField] private ScenarioMessagePresenter scenarioMessagePresenter;
 
+        [SerializeField] private ScenarioSelectionPresenter selectionPresenter;
+
         [SerializeField] private GameObject backgroundRoot;
         [SerializeField] private GameObject standImageRoot;
         [SerializeField] private GameObject clickArea;
@@ -60,6 +62,11 @@ namespace GubGub.Scripts.Main
         /// バックログビューの管理クラス
         /// </summary>
         public BackLogPresenter BackLogPresenter => backLogPresenter;
+
+        /// <summary>
+        /// 選択肢ビューの管理クラス
+        /// </summary>
+        public ScenarioSelectionPresenter SelectionPresenter => selectionPresenter;
 
 
         public async Task Initialize()
@@ -109,6 +116,8 @@ namespace GubGub.Scripts.Main
         public void ResetView()
         {
             MessagePresenter.ClearText();
+            SelectionPresenter.Clear();
+            
             RemoveAllStand();
             RemoveImage();
         }
