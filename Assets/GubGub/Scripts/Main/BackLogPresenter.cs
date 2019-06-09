@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 
-namespace GubGub.Scripts.View
+namespace GubGub.Scripts.Main
 {
     /// <summary>
     /// シナリオのバックログ表示クラス
