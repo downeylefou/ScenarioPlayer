@@ -17,7 +17,7 @@ namespace GubGub.Scripts.View
         /// <summary>
         /// クリックイベント
         /// </summary>
-        private UnityAction _onClick;
+        private UnityAction<string> _onClick;
 
         /// <summary>
         /// 選択した際の遷移先ラベル名
@@ -36,7 +36,7 @@ namespace GubGub.Scripts.View
         /// <param name="messageText"></param>
         /// <param name="labelName"></param>
         /// <param name="onClick"></param>
-        public void Initialize(string messageText, string labelName, UnityAction onClick)
+        public void Initialize(string messageText, string labelName, UnityAction<string> onClick)
         {
             selectionMessage.text = messageText;
             _labelName = labelName;
@@ -49,7 +49,7 @@ namespace GubGub.Scripts.View
         /// </summary>
         private void OnClickButton()
         {
-            _onClick?.Invoke();
+            _onClick?.Invoke(_labelName);
         }
     }
 }

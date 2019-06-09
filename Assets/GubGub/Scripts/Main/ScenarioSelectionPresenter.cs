@@ -36,7 +36,10 @@ namespace GubGub.Scripts.Main
         /// </summary>
         public void Clear()
         {
-            _viewList.ForEach(Destroy);
+            foreach (var view in _viewList)
+            {
+                Destroy(view.gameObject);
+            }
             _viewList.Clear();
         }
                 
@@ -48,13 +51,16 @@ namespace GubGub.Scripts.Main
         {
             var view = Instantiate(selectionPrefab, transform)
                 .GetComponent<ScenarioSelectionView>();
-            
-            _viewList.Add(view);
+
             view.Initialize(command.SelectionText, command.LabelName, OnClick);
             
-            void OnClick()
+            _viewList.Add(view);
+
+            // クリック時のコールバック
+            // ビューから渡されるラベル名を通知する
+            void OnClick(string labelName)
             {
-                onSelect.OnNext(command.LabelName);
+                onSelect.OnNext(labelName);
             }
         }
         

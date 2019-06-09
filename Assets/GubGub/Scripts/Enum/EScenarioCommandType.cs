@@ -45,6 +45,7 @@ namespace GubGub.Scripts.Enum
                 {EScenarioCommandType.Se, "se"},
                 {EScenarioCommandType.Bgm, "bgm"},
                 {EScenarioCommandType.Jump, "jump"},
+                {EScenarioCommandType.Selection, "selection"},
             };
 
         /// <summary>
