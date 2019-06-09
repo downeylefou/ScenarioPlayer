@@ -21,6 +21,7 @@ namespace GubGub.Scripts.Enum
         Se,
         Bgm,
         Jump,
+        Selection,
     }
 
     /// <summary>
