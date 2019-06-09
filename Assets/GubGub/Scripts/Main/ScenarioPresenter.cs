@@ -230,12 +230,22 @@ namespace GubGub.Scripts.Main
         #region private method
 
         /// <summary>
+        /// 行番号を進め、シナリオを進行させる
+        /// </summary>
+        /// <param name="jumpLine">ジャンプする際の行データ</param>
+        private void ForwardNextLine(List<string> jumpLine = null)
+        {
+            _parseData.AdvanceLineNumber();
+            Forward(jumpLine);
+        }
+        
+        /// <summary>
         /// シナリオを進行させる
         /// </summary>
         /// <param name="jumpLine">ジャンプする際の行データ</param>
         private void Forward(List<string> jumpLine = null)
         {
-            _currentLine = jumpLine ?? _parseData.GetCurrentLineAndAdvanceNumber();
+            _currentLine = jumpLine ?? _parseData.GetCurrentLine();
 
             if (_currentLine == null || _currentLine.Count <= 0)
             {
@@ -330,11 +340,11 @@ namespace GubGub.Scripts.Main
                     
                     if ((isAutoPlaying || _isSkip) && !_isProcessingShowSelection)
                     {
-                        Forward();
+                        ForwardNextLine();
                     }
                 }).AddTo(this);
         }
-
+        
         /// <summary>
         /// コマンド完了時
         /// </summary>
@@ -346,10 +356,10 @@ namespace GubGub.Scripts.Main
             {
                 SetIsWaitProcessState(false);
 
-                Forward();
+                ForwardNextLine();
             }
         }
-        
+
         /// <summary>
         /// メッセージの一文字あたりの表示速度を取得する
         /// </summary>
@@ -408,6 +418,8 @@ namespace GubGub.Scripts.Main
         private void OnSelectionClick(string labelName)
         {
             _isProcessingShowSelection = false;
+            
+            _viewMediator.SelectionPresenter.Clear();
             JumpToLabelAndForward(labelName);
         }
         
@@ -425,8 +437,13 @@ namespace GubGub.Scripts.Main
         {
             var command = value as SelectionCommand;
 
-            // 選択肢表示中フラグを有効にし、以降のコマンドに進まないようにする
-            _isProcessingShowSelection = true;
+            // 次の行も選択肢コマンドでなければ、選択肢表示中フラグを有効にし、
+            // 以降のコマンドに進まないようにする
+            if (!_parseData.GetIsMatchNextLineCommandName(
+                command.CommandType.GetName()))
+            {
+                _isProcessingShowSelection = true;
+            }
             
             _viewMediator.SelectionPresenter.AddSelection(command);
             await Task.CompletedTask;
@@ -557,7 +574,7 @@ namespace GubGub.Scripts.Main
             }
             else
             {
-                Forward();
+                ForwardNextLine();
             }
         }
         
@@ -588,7 +605,7 @@ namespace GubGub.Scripts.Main
             // メッセージ表示タイマー終了後にオートプレイになった場合は、すぐに進める
             if (isAutoPlaying && !_isProcessingShowMessage && !_isProcessingShowSelection)
             {
-                Forward();
+                ForwardNextLine();
             }
         }
 
@@ -611,7 +628,7 @@ namespace GubGub.Scripts.Main
                 {
                     // メッセージを表示しきっている状態なので、すぐ次に進める
                     _isProcessingShowMessage = false;
-                    Forward();
+                    ForwardNextLine();
                 }
             }
         }
