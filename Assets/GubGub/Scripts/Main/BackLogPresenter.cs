@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using GubGub.Scripts.Command;
 using GubGub.Scripts.Data;
+using GubGub.Scripts.View;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Events;
