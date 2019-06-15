@@ -26,5 +26,7 @@ namespace GubGub.Scripts.View.Interface
         Image NextIcon { get; }
         void SetAutoButtonState(bool isAuto);
         void SetSkipButtonState(bool isAuto);
+
+        void ChangeVisible(bool isVisible);
     }
 }

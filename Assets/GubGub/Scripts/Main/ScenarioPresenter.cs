@@ -67,6 +67,11 @@ namespace GubGub.Scripts.Main
         private bool _isSkip;
         
         /// <summary>
+        /// メッセージウィンドウを閉じた状態か
+        /// </summary>
+        private bool _isCloseMessageWindow;
+        
+        /// <summary>
         ///  コマンド処理中にユーザー入力を止めるためのフラグ
         /// </summary>
         private bool _isWaitProcess;
@@ -423,6 +428,15 @@ namespace GubGub.Scripts.Main
             JumpToLabelAndForward(labelName);
         }
         
+        /// <summary>
+        /// メッセージウィンドウの表示状態を変更する
+        /// </summary>
+        private void ChangeWindowCloseState(bool isCloseWindow)
+        {
+            _isCloseMessageWindow = isCloseWindow;
+            _viewMediator.ChangeMessageWindowVisible(!_isCloseMessageWindow);
+        }
+        
         #endregion
 
         #region commandAction
@@ -552,6 +566,13 @@ namespace GubGub.Scripts.Main
             
             _isSkip = false;
             _viewMediator.MessagePresenter.SetSkipButtonState(false);
+
+            // メッセージウィンドウがクローズ中なら、クローズの解除だけ行う
+            if (_isCloseMessageWindow)
+            {
+                ChangeWindowCloseState(false);
+                return;
+            }
             
             if (_isWaitProcess || _isProcessingShowSelection)
             {
@@ -638,7 +659,10 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private void OnCloseButton()
         {
+            _isSkip = false;
+            isAutoPlaying = false;
             
+            ChangeWindowCloseState(true);
         }
 
         #endregion

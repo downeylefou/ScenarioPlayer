@@ -56,6 +56,15 @@ namespace GubGub.Scripts.View
         {
             gameObject.transform.SetParent(parent, worldPositionStays);
         }
+
+        /// <summary>
+        /// 表示状態を変更する
+        /// </summary>
+        /// <param name="isVisible"></param>
+        public void ChangeVisible(bool isVisible)
+        {
+            gameObject.SetActive(isVisible);
+        }
         
         /// <summary>
         /// オートボタンのトグル状態を設定する

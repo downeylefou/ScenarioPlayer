@@ -129,6 +129,15 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
+        /// メッセージウィンドウの表示状態を変更する
+        /// </summary>
+        /// <param name="isVisible"></param>
+        public void ChangeMessageWindowVisible(bool isVisible)
+        {
+            CurrentView.ChangeVisible(isVisible);
+        }
+
+        /// <summary>
         ///  メッセージビューの親オブジェクトを設定する
         /// </summary>
         /// <param name="parent"></param>

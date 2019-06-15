@@ -6,7 +6,6 @@ using GubGub.Scripts.Command;
 using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
-using GubGub.Scripts.View;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -295,6 +294,15 @@ namespace GubGub.Scripts.Main
             BackLogPresenter.Hide();
         }
         
+        /// <summary>
+        /// メッセージウィンドウの表示状態を変更する
+        /// </summary>
+        /// <param name="isVisible"></param>
+        public void ChangeMessageWindowVisible(bool isVisible)
+        {
+            MessagePresenter.ChangeMessageWindowVisible(isVisible);
+        }
+        
         #endregion
 
         #region private method
@@ -504,5 +512,7 @@ namespace GubGub.Scripts.Main
         }
 
         #endregion
+
+
     }
 }
