@@ -99,6 +99,15 @@ namespace GubGub.Scripts.Main
 
             AdjustPosition();
         }
+        
+        /// <summary>
+        /// 表示状態を変更する
+        /// </summary>
+        /// <param name="isVisible"></param>
+        public void ChangeVisible(bool isVisible)
+        {
+            gameObject.SetActive(isVisible);
+        }
 
         /// <summary>
         /// 全体の座標を調整

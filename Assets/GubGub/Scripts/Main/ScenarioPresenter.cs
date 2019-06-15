@@ -68,9 +68,9 @@ namespace GubGub.Scripts.Main
         private bool _isSkip;
         
         /// <summary>
-        /// メッセージウィンドウを閉じた状態か
+        /// メッセージウィンドウや選択肢を非表示にした状態か
         /// </summary>
-        private bool _isCloseMessageWindow;
+        private bool _isCloseView;
         
         /// <summary>
         ///  コマンド処理中にユーザー入力を止めるためのフラグ
@@ -430,12 +430,12 @@ namespace GubGub.Scripts.Main
         }
         
         /// <summary>
-        /// メッセージウィンドウの表示状態を変更する
+        /// メッセージウィンドウと選択肢の表示状態を変更する
         /// </summary>
-        private void ChangeWindowCloseState(bool isCloseWindow)
+        private void ChangeViewCloseState(bool isCloseView)
         {
-            _isCloseMessageWindow = isCloseWindow;
-            _viewMediator.ChangeMessageWindowVisible(!_isCloseMessageWindow);
+            _isCloseView = isCloseView;
+            _viewMediator.ChangeViewVisibleWithCloseState(_isCloseView);
         }
         
         #endregion
@@ -574,10 +574,10 @@ namespace GubGub.Scripts.Main
             _isSkip = false;
             _viewMediator.MessagePresenter.SetSkipButtonState(false);
 
-            // メッセージウィンドウがクローズ中なら、クローズの解除だけ行う
-            if (_isCloseMessageWindow)
+            // クローズ中なら、クローズの解除だけ行う
+            if (_isCloseView)
             {
-                ChangeWindowCloseState(false);
+                ChangeViewCloseState(false);
                 return;
             }
             
@@ -676,7 +676,7 @@ namespace GubGub.Scripts.Main
             _isSkip = false;
             isAutoPlaying = false;
             
-            ChangeWindowCloseState(true);
+            ChangeViewCloseState(true);
         }
 
         #endregion

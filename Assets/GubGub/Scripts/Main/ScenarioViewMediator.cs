@@ -295,12 +295,13 @@ namespace GubGub.Scripts.Main
         }
         
         /// <summary>
-        /// メッセージウィンドウの表示状態を変更する
+        /// クローズ状態かによってビューの表示状態を変更する
         /// </summary>
-        /// <param name="isVisible"></param>
-        public void ChangeMessageWindowVisible(bool isVisible)
+        /// <param name="isCloseView"></param>
+        public void ChangeViewVisibleWithCloseState(bool isCloseView)
         {
-            MessagePresenter.ChangeMessageWindowVisible(isVisible);
+            MessagePresenter.ChangeMessageWindowVisible(!isCloseView);
+            SelectionPresenter.ChangeVisible(!isCloseView);
         }
         
         #endregion
