@@ -236,26 +236,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 2660361379512258796, guid: 9f717c10447545b41b33c3356ba91598,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2660361379512258796, guid: 9f717c10447545b41b33c3356ba91598,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114396727776274816, guid: 9f717c10447545b41b33c3356ba91598,
-        type: 3}
-      propertyPath: _presenter
-      value: 
-      objectReference: {fileID: 2082191996}
-    - target: {fileID: 114924816559121550, guid: 9f717c10447545b41b33c3356ba91598,
-        type: 3}
-      propertyPath: selectionPresenter
-      value: 
-      objectReference: {fileID: 2082191996}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f717c10447545b41b33c3356ba91598, type: 3}
 --- !u!1 &58043576
@@ -823,26 +803,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4333982352617701060}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2082191994 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4031942174121736332, guid: 9f717c10447545b41b33c3356ba91598,
-    type: 3}
-  m_PrefabInstance: {fileID: 49557475}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2082191996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2082191994}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfb66dd99d678ef45a2d0d7db38ba424, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectionPrefab: {fileID: 6298336415386339818, guid: d80914a78661eeb46aa8765aa45c1c4d,
-    type: 3}
 --- !u!1001 &4333982352617701060
 PrefabInstance:
   m_ObjectHideFlags: 0

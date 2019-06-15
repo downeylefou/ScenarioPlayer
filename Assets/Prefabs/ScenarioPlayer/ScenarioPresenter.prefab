@@ -725,7 +725,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backLogPresenter: {fileID: 6287634665366420847}
   scenarioMessagePresenter: {fileID: 114812879941709690}
-  selectionPresenter: {fileID: 1396464265656542449}
+  selectionPresenter: {fileID: 2082191996}
   backgroundRoot: {fileID: 1235604055494646}
   standImageRoot: {fileID: 1364475203617322}
   clickArea: {fileID: 1395875138626368}
@@ -1926,6 +1926,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2660361379512258796}
   - component: {fileID: 1396464265656542449}
+  - component: {fileID: 2082191996}
   m_Layer: 5
   m_Name: SelectionPresenter
   m_TagString: Untagged
@@ -1949,10 +1950,24 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1396464265656542449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4031942174121736332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfb66dd99d678ef45a2d0d7db38ba424, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectionPrefab: {fileID: 6298336415386339818, guid: d80914a78661eeb46aa8765aa45c1c4d,
+    type: 3}
+--- !u!114 &2082191996
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
