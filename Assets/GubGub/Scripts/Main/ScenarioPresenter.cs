@@ -10,6 +10,7 @@ using GubGub.Scripts.Parser;
 using UniRx;
 using UniRx.Async;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace GubGub.Scripts.Main
 {
@@ -175,7 +176,7 @@ namespace GubGub.Scripts.Main
 
         private void Bind()
         {
-            _viewMediator.onAnyClick.Subscribe(_ => OnAnyClick()).AddTo(this);
+            _viewMediator.onAnyClick.Subscribe(eventData => OnAnyClick(eventData)).AddTo(this);
 
             // コマンドの終了を監視
             _commandExecutor.commandEnd.Subscribe(_ => { OnCommandEnd(); }).AddTo(this);
@@ -556,8 +557,14 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  画面中をクリックした
         /// </summary>
-        private void OnAnyClick()
+        private void OnAnyClick(PointerEventData eventData)
         {
+            // 中クリックは処理しない
+            if (eventData.button == PointerEventData.InputButton.Middle)
+            {
+                return;
+            }
+            
             var tempIsSkip = _isSkip;
             
             // ユーザー操作を止めている間も、オートとスキップ状態の解除は行う
@@ -571,6 +578,13 @@ namespace GubGub.Scripts.Main
             if (_isCloseMessageWindow)
             {
                 ChangeWindowCloseState(false);
+                return;
+            }
+            
+            // 右クリックはクローズボタンと同等の処理を行う
+            if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                OnCloseButton();
                 return;
             }
             
