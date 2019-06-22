@@ -12,4 +12,6 @@ MITライセンス
 
 * FancyScrollView Copyright (c) 2017 setchi https://github.com/setchi/FancyScrollView/blob/master/LICENSE
 
+* UIEffect Copyright (c) 2018 Takashi Sakai https://github.com/mob-sakai/UIEffect/blob/develop/LICENSE.md
+
 * 空想曲線 https://kopacurve.blog.fc2.com/
