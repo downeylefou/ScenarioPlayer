@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
+using GubGub.Scripts.View;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -49,10 +50,10 @@ namespace GubGub.Scripts.Main
 
 
         /// <summary>
-        ///  立ち位置と、そこに表示されている立ち絵オブジェクトのリスト
+        ///  立ち位置と、そこに表示されている立ち絵のリスト
         /// </summary>
-        private readonly Dictionary<EScenarioStandPosition, GameObject> _standImages =
-            new Dictionary<EScenarioStandPosition, GameObject>()
+        private readonly Dictionary<EScenarioStandPosition, ImageView> _standImages =
+            new Dictionary<EScenarioStandPosition, ImageView>()
             {
                 {EScenarioStandPosition.Left, null}, {EScenarioStandPosition.Center, null},
                 {EScenarioStandPosition.Right, null}
@@ -174,12 +175,12 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  立ち絵オブジェクトを追加
         /// </summary>
-        /// <param name="standObj"></param>
+        /// <param name="imageView"></param>
         /// <param name="position"></param>
-        public void AddStand(GameObject standObj, EScenarioStandPosition position)
+        public void AddStand(ImageView imageView, EScenarioStandPosition position)
         {
-            standObj.transform.SetParent(standImageRoot.transform);
-            _standImages[position] = standObj;
+            imageView.gameObject.transform.SetParent(standImageRoot.transform);
+            _standImages[position] = imageView;
         }
 
         /// <summary>
@@ -187,7 +188,7 @@ namespace GubGub.Scripts.Main
         /// </summary>
         /// <param name="position"></param>
         /// <returns></returns>
-        public GameObject GetStandObj(EScenarioStandPosition position)
+        public ImageView GetStandImageView(EScenarioStandPosition position)
         {
             return _standImages[position];
         }

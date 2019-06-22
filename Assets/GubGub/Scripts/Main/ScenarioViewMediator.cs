@@ -6,6 +6,7 @@ using GubGub.Scripts.Command;
 using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
+using GubGub.Scripts.View;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -193,9 +194,11 @@ namespace GubGub.Scripts.Main
 
             var position = EScenarioStandPositionExtension.GetEnum(command.Position.ToLower());
 
-            // 同じ場所に同一人物が既に表示されている場合は、表示順を最前面にするのみ
+            // 同じ場所に同一人物が既に表示されている場合は、反転状態を反映するだけ
+            // TODO: 表示順を最前面にする
             if (IsSameStandImageAtPosition(command.StandName, position))
             {
+                _view.GetStandImageView(position).GetComponent<ImageView>().SetReverse(command.Reverse);
                 return;
             }
 
@@ -205,21 +208,18 @@ namespace GubGub.Scripts.Main
 
             if (sprite)
             {
-                var imageObj = new GameObject("StandImage");
-                var image = imageObj.AddComponent<Image>();
-                image.sprite = sprite;
-                image.SetAlpha(0f);
+                var imageView = ImageView.Instantiate(command.StandName);
+                imageView.SetSprite(sprite);
+                imageView.SetAlpha(0);
+                imageView.SetReverse(command.Reverse);
 
-                _view.AddStand(imageObj, position);
-                AdjustStand(imageObj, position, command);
+                _view.AddStand(imageView, position);
+                AdjustStand(imageView.gameObject, position, command);
 
-                await Fade(image, image.color, command.FadeTimeMilliSecond, 1f, command.IsWait);
+                await Fade(imageView.Image, imageView.Image.color,
+                    command.FadeTimeMilliSecond, 1f, command.IsWait);
 
                 _currentStandNames[position] = command.StandName;
-            }
-            else
-            {
-                // displayWarningMessage("指定した立ち絵が見つかりません。 " + standName);
             }
         }
 
@@ -359,7 +359,7 @@ namespace GubGub.Scripts.Main
                                        int fadeTimeMilliSecond = 0,
                                        bool isWait = false)
         {
-            var standObj = _view.GetStandObj(position);
+            var standObj = _view.GetStandImageView(position);
             if (standObj)
             {
                 var image = standObj.GetComponent<Image>();
