@@ -67,6 +67,7 @@ namespace GubGub.Scripts.Lib
             if (clip != null)
             {
                 Instance.bgmSource.clip = clip;
+                Instance.bgmSource.loop = true;
                 Instance.bgmSource.Play();
             }
         }
