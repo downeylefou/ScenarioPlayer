@@ -26,17 +26,15 @@ namespace GubGub.Scripts.Main
         /// </summary>
         public UnityAction onTouchDimmer;
         
-        private List<ScenarioLogData> logDataList = new List<ScenarioLogData>();
+        private readonly List<ScenarioLogData> _logDataList = new List<ScenarioLogData>();
 
 
         /// <summary>
         /// セルビューからボイス再生を通知されるストリーム
         /// </summary>
-        public Subject<string> PlayVoiceStream => _playVoiceStream;
+        public Subject<string> PlayVoiceStream { get; } = new Subject<string>();
 
-        private readonly Subject<string> _playVoiceStream = new Subject<string>();
 
-        
         private void Awake()
         {
             AddEventListener();
@@ -46,7 +44,7 @@ namespace GubGub.Scripts.Main
 
         public void Show()
         {
-            logScrollView.Jump(logDataList.Count);
+            logScrollView.Jump(_logDataList.Count);
 
             SetVisible(true);
         }
@@ -64,20 +62,20 @@ namespace GubGub.Scripts.Main
         {
             var log = new ScenarioLogData
             (
-                _playVoiceStream,
+                PlayVoiceStream,
                 message: command.Message,
                 speakerName: command.SpeakerName,
                 voicePath: command.VoiceName
             );
             
-            logDataList.Add(log);
+            _logDataList.Add(log);
 
             UpdateLog();
         }
 
         private void UpdateLog()
         {
-            logScrollView.UpdateData(logDataList);
+            logScrollView.UpdateData(_logDataList);
         }
         
         private void AddEventListener()

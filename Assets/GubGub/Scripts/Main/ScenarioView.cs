@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
-using GubGub.Scripts.View;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -36,6 +36,11 @@ namespace GubGub.Scripts.Main
         ///  画面内のどこかをクリックした
         /// </summary>
         public Subject<PointerEventData> onAnyClick = new Subject<PointerEventData>();
+
+        /// <summary>
+        /// マウスホイールを行った
+        /// </summary>
+        public Subject<float> onMouseWheel = new Subject<float>();
 
         /// <summary>
         ///  メッセージビューのタイプ
@@ -77,7 +82,12 @@ namespace GubGub.Scripts.Main
 
         private void AddEventListeners()
         {
-            clickArea.GetComponent<Image>().OnPointerClickAsObservable().Subscribe(onAnyClick);
+            clickArea.GetComponent<Image>().OnPointerClickAsObservable().Subscribe(onAnyClick).AddTo(this);
+            
+            clickArea.GetComponent<Image>().UpdateAsObservable()
+                .Select(_ => Input.GetAxis("Mouse ScrollWheel"))
+                .Where(axis => Math.Abs(axis) > 0)
+                .Subscribe(onMouseWheel).AddTo(this);
         }
 
         /// <summary>

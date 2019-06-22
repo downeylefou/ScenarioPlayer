@@ -43,6 +43,11 @@ namespace GubGub.Scripts.Main
         /// 画面をクリックしたことを通知する
         /// </summary>
         public readonly Subject<PointerEventData> onAnyClick = new Subject<PointerEventData>();
+        
+        /// <summary>
+        /// スクロールされたことを通知する
+        /// </summary>
+        public readonly Subject<float> onMouseWheel= new Subject<float>();
 
         /// <summary>
         ///  立ち位置と、そこに表示されている立ち絵の名前のリスト
@@ -76,6 +81,7 @@ namespace GubGub.Scripts.Main
             SetConfig(configData);
 
             _view.onAnyClick.Subscribe(onAnyClick);
+            _view.onMouseWheel.Subscribe(onMouseWheel);
         }
 
         #region public command method

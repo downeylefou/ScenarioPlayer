@@ -174,9 +174,25 @@ namespace GubGub.Scripts.Main
             await Task.CompletedTask;
         }
 
+        private void OnMouseWheel(float axis)
+        {
+            Debug.Log("OnMouseWheel = " + axis);
+
+            if (axis < 0)
+            {
+                OnAnyClick();
+            }
+            else
+            {
+                OnLogButton();
+            }
+        }
+        
         private void Bind()
         {
-            _viewMediator.onAnyClick.Subscribe(eventData => OnAnyClick(eventData)).AddTo(this);
+            _viewMediator.onAnyClick.Subscribe(OnAnyClick).AddTo(this);
+
+            _viewMediator.onMouseWheel.Subscribe(OnMouseWheel).AddTo(this);
 
             // コマンドの終了を監視
             _commandExecutor.commandEnd.Subscribe(_ => { OnCommandEnd(); }).AddTo(this);
@@ -557,10 +573,10 @@ namespace GubGub.Scripts.Main
         /// <summary>
         ///  画面中をクリックした
         /// </summary>
-        private void OnAnyClick(PointerEventData eventData)
+        private void OnAnyClick(PointerEventData eventData = null)
         {
             // 中クリックは処理しない
-            if (eventData.button == PointerEventData.InputButton.Middle)
+            if (eventData?.button == PointerEventData.InputButton.Middle)
             {
                 return;
             }
@@ -582,7 +598,7 @@ namespace GubGub.Scripts.Main
             }
             
             // 右クリックはクローズボタンと同等の処理を行う
-            if (eventData.button == PointerEventData.InputButton.Right)
+            if (eventData?.button == PointerEventData.InputButton.Right)
             {
                 OnCloseButton();
                 return;
