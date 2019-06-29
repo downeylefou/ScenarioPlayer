@@ -1,4 +1,5 @@
 ﻿using GubGub.Scripts.Enum;
+using UniRx;
 
 namespace GubGub.Scripts.Data
 {
@@ -37,6 +38,17 @@ namespace GubGub.Scripts.Data
         /// </summary>
         public int MinSkipWaitTimeMilliSecond { get; set; }
 
+
+        /// <summary>
+        /// BGMのボリューム
+        /// </summary>
+        public readonly FloatReactiveProperty bgmVolume =new FloatReactiveProperty();
+        
+        /// <summary>
+        /// SEのボリューム
+        /// </summary>
+        public readonly FloatReactiveProperty seVolume =new FloatReactiveProperty();
+
         public ScenarioConfigData()
         {
             MessageViewType = EScenarioMessageViewType.Default;
@@ -45,6 +57,9 @@ namespace GubGub.Scripts.Data
             MinAutoWaitTimeMilliSecond = 1000;
             SkipMessageSpeedMilliSecond = 20;
             MinSkipWaitTimeMilliSecond = 50;
+
+            bgmVolume.Value = 1f;
+            seVolume.Value = 1f;
         }
     }
 }

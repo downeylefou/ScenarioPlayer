@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using GubGub.Scripts.Data;
+using UniRx;
+using UnityEngine;
 
 namespace GubGub.Scripts.Lib
 {
@@ -29,8 +31,31 @@ namespace GubGub.Scripts.Lib
         [SerializeField] private AudioSource bgmSource;
     
         [SerializeField] private AudioSource seSource;
-    
-    
+
+        private ScenarioConfigData _config;
+
+        /// <summary>
+        /// インスペクタから操作するためのBGMボリューム
+        /// </summary>
+        [RangeReactivePropertyAttribute(0, 1)]
+        [SerializeField] private FloatReactiveProperty bgmVolume = new FloatReactiveProperty(1f); 
+        
+        /// <summary>
+        /// インスペクタから操作するためのSEボリューム
+        /// </summary>
+        [RangeReactivePropertyAttribute(0, 1)]
+        [SerializeField] private FloatReactiveProperty seVolume = new FloatReactiveProperty(1f); 
+
+        /// <summary>
+        /// 初期化処理
+        /// </summary>
+        /// <param name="config"></param>
+        public static void Initialize(ScenarioConfigData config)
+        {
+            Instance._config = config;
+            Instance.Bind();
+        }
+        
         /// <summary>
         /// 全てのサウンドを停止する
         /// </summary>
@@ -84,6 +109,36 @@ namespace GubGub.Scripts.Lib
             {
                 Instance.seSource.PlayOneShot(clip);
             }
+        }
+        
+        /// <summary>
+        /// BGMのボリュームを変更する
+        /// </summary>
+        /// <param name="volume"></param>
+        private static void ChangeBgmVolume(float volume)
+        {
+            Instance.bgmSource.volume = volume;
+        }
+        
+        /// <summary>
+        /// SEのボリュームを変更する
+        /// </summary>
+        /// <param name="volume"></param>
+        private static void ChangeSeVolume(float volume)
+        {
+            Instance.seSource.volume = volume;
+        }
+        
+        private void Bind()
+        {
+            _config.bgmVolume.Subscribe(ChangeBgmVolume).AddTo(this);
+            _config.seVolume.Subscribe(ChangeSeVolume).AddTo(this);
+            
+            #if UNITY_EDITOR
+            // インスペクタからコンフィグの値を操作する
+            bgmVolume.Subscribe(volume => _config.bgmVolume.Value = volume).AddTo(this);
+            seVolume.Subscribe(volume => _config.seVolume.Value = volume).AddTo(this);
+            #endif
         }
     }
 }
