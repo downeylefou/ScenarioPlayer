@@ -10,7 +10,7 @@ namespace GubGub.Scripts.View
     /// </summary>
     public class DefaultMessageWindowView : MonoBehaviour, IMessageWindowView
     {
-        public UnityAction OnOptionButton { get; set; }
+        public UnityAction OnConfigButton { get; set; }
         public UnityAction OnCloseButton { get; set; }
         public UnityAction OnLogButton { get; set; }
         public UnityAction<bool> OnAutoButton { get; set; }
@@ -19,7 +19,7 @@ namespace GubGub.Scripts.View
         [SerializeField] private Toggle skipButton;
         [SerializeField] private Toggle autoButton;
         [SerializeField] private Button closeButton;
-        [SerializeField] private Button optionButton;
+        [SerializeField] private Button configButton;
         [SerializeField] private Button logButton;
         
         
@@ -48,7 +48,7 @@ namespace GubGub.Scripts.View
             skipButton.onValueChanged.AddListener(OnSkipButton);
             autoButton.onValueChanged.AddListener(OnAutoButton);
             closeButton.onClick.AddListener(OnCloseButton);
-            optionButton.onClick.AddListener(OnOptionButton);
+            configButton.onClick.AddListener(OnConfigButton);
             logButton.onClick.AddListener(OnLogButton);
         }
         

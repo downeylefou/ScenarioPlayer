@@ -10,7 +10,7 @@ namespace GubGub.Scripts.View.Interface
     /// </summary>
     public interface IMessageWindowView
     {
-        UnityAction OnOptionButton { set; }
+        UnityAction OnConfigButton { set; }
         UnityAction OnCloseButton { set; }
         UnityAction OnLogButton { set; }
         UnityAction<bool> OnAutoButton { set; }

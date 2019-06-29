@@ -117,6 +117,7 @@ namespace GubGub.Scripts.Main
             await view.Initialize();
             
             _viewMediator = new ScenarioViewMediator(view, _configData);
+            SoundManager.Initialize(_configData);
 
             InitializeCommandActions();
             
@@ -174,20 +175,6 @@ namespace GubGub.Scripts.Main
             await Task.CompletedTask;
         }
 
-        private void OnMouseWheel(float axis)
-        {
-            Debug.Log("OnMouseWheel = " + axis);
-
-            if (axis < 0)
-            {
-                OnAnyClick();
-            }
-            else
-            {
-                OnLogButton();
-            }
-        }
-        
         private void Bind()
         {
             _viewMediator.onAnyClick.Subscribe(OnAnyClick).AddTo(this);
@@ -198,24 +185,31 @@ namespace GubGub.Scripts.Main
             _commandExecutor.commandEnd.Subscribe(_ => { OnCommandEnd(); }).AddTo(this);
 
             // バックログからのボイス再生通知を監視
-            _viewMediator.BackLogPresenter.PlayVoiceStream.Subscribe(PlayVoice);
+            _viewMediator.BackLogPresenter.PlayVoiceStream.Subscribe(PlayVoice).AddTo(this);
 
             // メッセージの表示完了を監視
-            _viewMediator.MessagePresenter.IsEndMessage.Subscribe(_ => OnEndMessage());
+            _viewMediator.MessagePresenter.IsEndMessage.Subscribe(_ => OnEndMessage()).AddTo(this);
             
             // 選択肢のクリックを監視
-            _viewMediator.SelectionPresenter.onSelect.Subscribe( OnSelectionClick);
+            _viewMediator.SelectionPresenter.onSelect.Subscribe( OnSelectionClick).AddTo(this);
+
+            // Bgmのボリューム変更を監視
+            _viewMediator.ConfigPresenter.changedBgmVolume.Subscribe(OnChangedBgmVolume).AddTo(this);
+            
+            // Seのボリューム変更を監視
+            _viewMediator.ConfigPresenter.changedSeVolume.Subscribe(OnChangedSeVolume).AddTo(this);
         }
 
         private void AddEventListeners()
         {
-            _viewMediator.MessagePresenter.View.OnOptionButton = OnOptionButton;
+            _viewMediator.MessagePresenter.View.OnConfigButton = OnConfigButton;
             _viewMediator.MessagePresenter.View.OnAutoButton = OnAutoButton;
             _viewMediator.MessagePresenter.View.OnLogButton = OnLogButton;
             _viewMediator.MessagePresenter.View.OnSkipButton = OnSkipButton;
             _viewMediator.MessagePresenter.View.OnCloseButton= OnCloseButton;
 
             _viewMediator.BackLogPresenter.onTouchDimmer = HideBackLog;
+            _viewMediator.ConfigPresenter.onTouchDimmer = HideConfig;
         }
 
         /// <summary>
@@ -417,6 +411,16 @@ namespace GubGub.Scripts.Main
         private void HideBackLog()
         {
             _viewMediator.HideScenarioLog();
+        }
+
+        /// <summary>
+        /// コンフィグを非表示にする
+        /// </summary>
+        private void HideConfig()
+        {
+            _viewMediator.HideConfig();
+            
+            // TODO: コンフィグを保存する
         }
         
         /// <summary>
@@ -630,6 +634,23 @@ namespace GubGub.Scripts.Main
         }
         
         /// <summary>
+        /// マウスホイールを行った
+        /// </summary>
+        /// <param name="axis"></param>
+        private void OnMouseWheel(float axis)
+        {
+            // 下スクロールでページ送り、上スクロールでバックログの表示
+            if (axis < 0)
+            {
+                OnAnyClick();
+            }
+            else
+            {
+                OnLogButton();
+            }
+        }
+        
+        /// <summary>
         ///  バックログボタン
         /// </summary>
         private void OnLogButton()
@@ -638,11 +659,11 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
-        /// オプションボタン
+        /// コンフィグボタン
         /// </summary>
-        private void OnOptionButton()
+        private void OnConfigButton()
         {
-            Debug.Log("OnOptionButton");
+            _viewMediator.ShowConfig();
         }
 
         /// <summary>
@@ -685,7 +706,7 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
-        /// クローズボタン
+        /// メッセージウィンドウのクローズボタン
         /// </summary>
         private void OnCloseButton()
         {
@@ -693,6 +714,24 @@ namespace GubGub.Scripts.Main
             isAutoPlaying = false;
             
             ChangeViewCloseState(true);
+        }
+
+        /// <summary>
+        /// Bgmのボリューム値が変更された
+        /// </summary>
+        /// <param name="volume"></param>
+        private void OnChangedBgmVolume(float volume)
+        {
+            _configData.bgmVolume.Value = volume;
+        }
+        
+        /// <summary>
+        /// Seのボリューム値が変更された
+        /// </summary>
+        /// <param name="volume"></param>
+        private void OnChangedSeVolume(float volume)
+        {
+            _configData.seVolume.Value = volume;
         }
 
         #endregion

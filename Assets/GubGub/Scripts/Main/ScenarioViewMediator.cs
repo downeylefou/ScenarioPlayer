@@ -41,6 +41,11 @@ namespace GubGub.Scripts.Main
         public ScenarioSelectionPresenter SelectionPresenter => _view.SelectionPresenter;
 
         /// <summary>
+        /// コンフィグウィンドウの管理クラス
+        /// </summary>
+        public ScenarioConfigPresenter ConfigPresenter => _view.ConfigPresenter;
+
+        /// <summary>
         /// 画面をクリックしたことを通知する
         /// </summary>
         public readonly Subject<PointerEventData> onAnyClick = new Subject<PointerEventData>();
@@ -84,9 +89,7 @@ namespace GubGub.Scripts.Main
             _view.onAnyClick.Subscribe(onAnyClick);
             _view.onMouseWheel.Subscribe(onMouseWheel);
         }
-
-        #region public command method
-                
+        
         /// <summary>
         /// シナリオプレイヤーを表示する
         /// </summary>
@@ -121,7 +124,60 @@ namespace GubGub.Scripts.Main
 
             _currentImageName = ""; 
         }
+
+        /// <summary>
+        /// シナリオバックログにログデータを追加する
+        /// </summary>
+        /// <param name="command"></param>
+        public void AddScenarioLog(MessageCommand command)
+        {
+            BackLogPresenter.AddScenarioLog(command);
+        }
         
+        /// <summary>
+        /// シナリオバックログを表示する
+        /// </summary>
+        public void ShowScenarioLog()
+        {
+            BackLogPresenter.Show();
+        }
+        
+        /// <summary>
+        /// シナリオバックログを非表示にする
+        /// </summary>
+        public void HideScenarioLog()
+        {
+            BackLogPresenter.Hide();
+        }
+        
+        /// <summary>
+        /// クローズ状態かによってビューの表示状態を変更する
+        /// </summary>
+        /// <param name="isCloseView"></param>
+        public void ChangeViewVisibleWithCloseState(bool isCloseView)
+        {
+            MessagePresenter.ChangeMessageWindowVisible(!isCloseView);
+            SelectionPresenter.ChangeVisible(!isCloseView);
+        }
+
+        /// <summary>
+        /// コンフィグを表示する
+        /// </summary>
+        public void ShowConfig()
+        {
+            ConfigPresenter.Show();
+        }
+        
+        /// <summary>
+        /// コンフィグを非表示にする
+        /// </summary>
+        public void HideConfig()
+        {
+            ConfigPresenter.Hide();
+        }
+        
+        #region public command method
+   
         /// <summary>
         ///  メッセージウィンドウを表示する
         /// </summary>
@@ -273,41 +329,6 @@ namespace GubGub.Scripts.Main
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        /// <summary>
-        /// シナリオバックログにログデータを追加する
-        /// </summary>
-        /// <param name="command"></param>
-        public void AddScenarioLog(MessageCommand command)
-        {
-            BackLogPresenter.AddScenarioLog(command);
-        }
-        
-        /// <summary>
-        /// シナリオバックログを表示する
-        /// </summary>
-        public void ShowScenarioLog()
-        {
-            BackLogPresenter.Show();
-        }
-        
-        /// <summary>
-        /// シナリオバックログを非表示にする
-        /// </summary>
-        public void HideScenarioLog()
-        {
-            BackLogPresenter.Hide();
-        }
-        
-        /// <summary>
-        /// クローズ状態かによってビューの表示状態を変更する
-        /// </summary>
-        /// <param name="isCloseView"></param>
-        public void ChangeViewVisibleWithCloseState(bool isCloseView)
-        {
-            MessagePresenter.ChangeMessageWindowVisible(!isCloseView);
-            SelectionPresenter.ChangeVisible(!isCloseView);
         }
         
         #endregion

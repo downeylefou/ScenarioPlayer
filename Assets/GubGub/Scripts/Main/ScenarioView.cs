@@ -24,6 +24,8 @@ namespace GubGub.Scripts.Main
 
         [SerializeField] private ScenarioSelectionPresenter selectionPresenter;
 
+        [SerializeField] private ScenarioConfigPresenter configPresenter;
+        
         [SerializeField] private GameObject backgroundRoot;
         [SerializeField] private GameObject standImageRoot;
         [SerializeField] private GameObject clickArea;
@@ -74,7 +76,11 @@ namespace GubGub.Scripts.Main
         /// </summary>
         public ScenarioSelectionPresenter SelectionPresenter => selectionPresenter;
 
-
+        /// <summary>
+        /// コンフィグウィンドウのの管理クラス
+        /// </summary>
+        public ScenarioConfigPresenter ConfigPresenter => configPresenter;
+        
         public async Task Initialize()
         {
             await InitializeMessageView();
