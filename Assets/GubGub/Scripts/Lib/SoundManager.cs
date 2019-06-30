@@ -54,6 +54,9 @@ namespace GubGub.Scripts.Lib
         {
             Instance._config = config;
             Instance.Bind();
+            
+            ChangeBgmVolume(Instance._config.bgmVolume.Value);
+            ChangeSeVolume(Instance._config.seVolume.Value);
         }
         
         /// <summary>
@@ -135,6 +138,9 @@ namespace GubGub.Scripts.Lib
             _config.seVolume.Subscribe(ChangeSeVolume).AddTo(this);
             
             #if UNITY_EDITOR
+            bgmVolume.Value = _config.bgmVolume.Value;
+            seVolume.Value = _config.seVolume.Value;
+            
             // インスペクタからコンフィグの値を操作する
             bgmVolume.Subscribe(volume => _config.bgmVolume.Value = volume).AddTo(this);
             seVolume.Subscribe(volume => _config.seVolume.Value = volume).AddTo(this);

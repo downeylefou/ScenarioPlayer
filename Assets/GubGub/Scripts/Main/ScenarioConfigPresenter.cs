@@ -1,4 +1,5 @@
-﻿using GubGub.Scripts.View;
+﻿using GubGub.Scripts.Data;
+using GubGub.Scripts.View;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Events;
@@ -31,11 +32,13 @@ namespace GubGub.Scripts.Main
         public UnityAction onTouchDimmer;
 
         
-        private void Awake()
+        public void Initialize(ScenarioConfigData config)
         {
             AddEventListener();
             Bind();
             
+            view.Initialize(config);
+
             Hide();
         }
         

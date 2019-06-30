@@ -88,6 +88,8 @@ namespace GubGub.Scripts.Main
 
             _view.onAnyClick.Subscribe(onAnyClick);
             _view.onMouseWheel.Subscribe(onMouseWheel);
+
+            ConfigPresenter.Initialize(configData);
         }
         
         /// <summary>

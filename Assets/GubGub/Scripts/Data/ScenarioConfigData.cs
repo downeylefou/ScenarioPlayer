@@ -1,10 +1,11 @@
-﻿using GubGub.Scripts.Enum;
+﻿using System;
+using GubGub.Scripts.Enum;
 using UniRx;
 
 namespace GubGub.Scripts.Data
 {
     /// <summary>
-    ///  シナリオ再生用のオプションデータ
+    ///  シナリオ再生用の設定データ
     /// </summary>
     public class ScenarioConfigData
     {
@@ -60,6 +61,26 @@ namespace GubGub.Scripts.Data
 
             bgmVolume.Value = 1f;
             seVolume.Value = 1f;
+        }
+
+        /// <summary>
+        /// 値を設定する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public void SetParam(EScenarioConfigKey key, float value)
+        {
+            switch (key)
+            {
+                case EScenarioConfigKey.BgmVolume:
+                    bgmVolume.Value = value;
+                    return;
+                case EScenarioConfigKey.SeVolume:
+                    seVolume.Value = value;
+                    return;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(key), key, null);
+            }
         }
     }
 }

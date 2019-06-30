@@ -45,11 +45,11 @@ namespace GubGub.Scripts.Main
         ///  パース済みのテキスト配列
         /// </summary>
         private ScenarioParseData _parseData;
-
+        
         /// <summary>
-        ///  シナリオ再生時の各種設定
+        /// シナリオ再生用のコンフィグ
         /// </summary>
-        private readonly ScenarioConfigData _configData = new ScenarioConfigData();
+        private ScenarioConfigData Config => ConfigManager.Config;
 
         /// <summary>
         ///  現在参照中のスクリプト行
@@ -98,7 +98,7 @@ namespace GubGub.Scripts.Main
         /// メッセージ表示用パラメータ
         /// </summary>
         private readonly ScenarioMessageData _messageData = new ScenarioMessageData();
-
+    
         [SerializeField]
         public ScenarioView view;
         
@@ -115,9 +115,12 @@ namespace GubGub.Scripts.Main
         private async Task Initialize()
         {
             await view.Initialize();
+
+            // 設定を取得してから初期化
+            ConfigManager.Initialize();
             
-            _viewMediator = new ScenarioViewMediator(view, _configData);
-            SoundManager.Initialize(_configData);
+            _viewMediator = new ScenarioViewMediator(view, ConfigManager.Config);
+            SoundManager.Initialize(ConfigManager.Config);
 
             InitializeCommandActions();
             
@@ -384,14 +387,14 @@ namespace GubGub.Scripts.Main
         {
             if (_isSkip)
             {
-                return _configData.SkipMessageSpeedMilliSecond;
+                return Config.SkipMessageSpeedMilliSecond;
             }
             if (isAutoPlaying)
             {
-                return _configData.AutoMessageSpeedMilliSecond;
+                return Config.AutoMessageSpeedMilliSecond;
             }
 
-            return _configData.MessageSpeedMilliSecond;
+            return Config.MessageSpeedMilliSecond;
         }
         
         /// <summary>
@@ -401,8 +404,8 @@ namespace GubGub.Scripts.Main
         private int GetMinMessageWaitTimeMilliSecond()
         {
             return _isSkip ?
-                _configData.MinSkipWaitTimeMilliSecond :
-                _configData.MinAutoWaitTimeMilliSecond;
+                Config.MinSkipWaitTimeMilliSecond :
+                Config.MinAutoWaitTimeMilliSecond;
         }
 
         /// <summary>
@@ -420,7 +423,8 @@ namespace GubGub.Scripts.Main
         {
             _viewMediator.HideConfig();
             
-            // TODO: コンフィグを保存する
+            // コンフィグを保存
+            ConfigManager.SaveConfig();
         }
         
         /// <summary>
@@ -722,7 +726,8 @@ namespace GubGub.Scripts.Main
         /// <param name="volume"></param>
         private void OnChangedBgmVolume(float volume)
         {
-            _configData.bgmVolume.Value = volume;
+            ConfigManager.SetParam(
+                EScenarioConfigKey.BgmVolume, volume);
         }
         
         /// <summary>
@@ -731,7 +736,8 @@ namespace GubGub.Scripts.Main
         /// <param name="volume"></param>
         private void OnChangedSeVolume(float volume)
         {
-            _configData.seVolume.Value = volume;
+            ConfigManager.SetParam(
+                EScenarioConfigKey.SeVolume, volume);
         }
 
         #endregion
