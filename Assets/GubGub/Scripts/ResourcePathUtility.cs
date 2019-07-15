@@ -49,7 +49,7 @@ namespace GubGub.Scripts
         }
         
         /// <summary>
-        /// プラットフォームごとのパスを作成
+        /// リソース取得先と、プラットフォームごとのパスを作成
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
@@ -59,16 +59,8 @@ namespace GubGub.Scripts
 
             if (ResourceLoadSetting.ResourceLoadType == EResourceLoadType.StreamingAssets)
             {
-                // プラットフォームごとの StreamingAssetsのパス
-                #if UNITY_EDITOR || WebPlayer
-                StringBuilder.Append(Application.dataPath);
-                StringBuilder.Append("/StreamingAssets/");
-                #elif Android
-                // TODO: 未検証
-                _stringBuilder.Append("jar:file://");
-                _stringBuilder.Append(Application.dataPath);
-                _stringBuilder.Append("!/assets/");
-                #endif
+                StringBuilder.Append(Application.streamingAssetsPath);
+                StringBuilder.Append("/");
             }
             else if (ResourceLoadSetting.ResourceLoadType == EResourceLoadType.Server)
             {
@@ -82,7 +74,7 @@ namespace GubGub.Scripts
             }
             else if (Application.platform == RuntimePlatform.Android)
             {
-                StringBuilder.Append("android");
+                StringBuilder.Append("android/");
             }
             StringBuilder.Append(filePath);
 
@@ -91,7 +83,6 @@ namespace GubGub.Scripts
         
         /// <summary>
         /// 固定のサフィックスを追加したアセットバンドル名を取得する
-        /// TODO: ユーザーがインスペクタから設定可能にする
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
