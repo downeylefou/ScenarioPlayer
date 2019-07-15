@@ -260,7 +260,7 @@ namespace GubGub.Scripts.Main
                 return;
             }
 
-            RemoveStand(position, ClearCommand.DefaultFadeTimeMilliSecond / 2, true);
+            await RemoveStand(position, ClearCommand.DefaultFadeTimeMilliSecond / 2, true);
 
             var sprite = await GetStandImageSprite(command.StandName);
 
