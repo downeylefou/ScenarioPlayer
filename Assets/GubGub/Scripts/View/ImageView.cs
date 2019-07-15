@@ -30,6 +30,8 @@ namespace GubGub.Scripts.View
             var imageView = view.AddComponent<ImageView>();
             imageView.Image = view.AddComponent<Image>();
             imageView._uiEffect = view.AddComponent<UIEffect>();
+            imageView._uiEffect.material =
+                Resources.Load<Material>("ScenarioPlayer/Material/UI-Effect");
             imageView._uiFlip = view.AddComponent<UIFlip>();
             return imageView;
         }
