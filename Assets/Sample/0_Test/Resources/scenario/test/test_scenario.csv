@@ -1,0 +1,76 @@
+fadeOut	black	0
+showWindow	default	bottom	0	0
+bgm	tw060.mp3
+image	h1.png
+wait	1000
+fadeIn	black	1000
+label	Start
+
+se	btn01.mp3
+			test_scenario
+stand		oujo.png	center
+			gre
+stand		gre.png	center
+			oujo
+stand		oujo.png	center
+			gre
+stand		gre.png	center
+			oujo
+stand		oujo.png	center
+			gre
+stand		gre.png	center
+
+
+
+
+se	btn01.mp3
+
+image	h2.png
+
+		られるれろ	普通
+stand		gre.png	center	0	0	fadeTime=1000	reverse=on
+se	btn01.mp3
+
+image	h3.png
+
+		られるれろ	反転
+stand		gre.png	center	0	0	fadeTime=1000	reverse=off
+se	btn01.mp3
+
+		られるれろ	普通
+stand		gre.png	center	0	0	fadeTime=1000	reverse=on
+se	btn01.mp3
+
+		られるれろ	反転
+
+		登場人物１	選択肢を表示する
+Selection	ABC	選択肢1
+Selection	DEF	選択肢2
+Selection	ABC	選択肢3
+Selection	DEF	選択肢4
+
+stand		hen.png	center	0	0	fadeTime=1000
+		登場人物１	やぶらこうじのぶらこうじ	ぱいぽ　ぱいぽ　ぱいぽのしゅーりんがん	しゅーりんがんのぐーりんだい
+		登場人物１	ジャンプできていない
+
+label	ABC
+stand		hen.png	center
+		登場人物１	選択肢1, 3にジャンプした！
+		登場人物１	ぐーりんだいのぽんぽこぴーの	ぽんぽこなーの	ちょうきゅうめいのちょうすけ
+jump	合流
+
+label	DEF
+stand		oujo.png	center
+		登場人物１	選択肢2, 4にジャンプした！
+			らりるれろ！
+jump	合流
+
+label	合流
+			合流した！
+Selection	Start	戻る
+Selection	End	終わる
+
+label	End
+
+			終了
+

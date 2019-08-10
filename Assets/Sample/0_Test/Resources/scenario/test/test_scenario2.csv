@@ -1,0 +1,54 @@
+showWindow	default	bottom	0	0
+image	h2		fadeTime=2000
+wait	10000
+			test_scenario2
+stand		gre	left	0	0	fadeTime=10000
+		登場人物１	じゅげむ　じゅげむ　ごこうのすりきれ	かいじゃりすいぎょの　すいぎょうまつ　うんらいまつ	ふうらいまつ　くうねるところにすむところ
+clear
+fadeOut	black	0
+showWindow	default	bottom	0	0
+bgm	tw060
+image	h2		fadeTime=2000
+wait	1000
+fadeIn	black	1000
+		登場人物１	やぶらこうじのぶらこうじ	ぱいぽ　ぱいぽ　ぱいぽのしゅーりんがん	しゅーりんがんのぐーりんだい
+stand		gre	left	0	0	fadeTime=1000
+fadeOut	black	0
+showWindow	default	bottom	0	0
+bgm	tw060
+image	h2		fadeTime=2000
+wait	1000
+fadeIn	black	1000
+		登場人物１	ぐーりんだいのぽんぽこぴーの	ぽんぽこなーの	ちょうきゅうめいのちょうすけ
+clear
+wait	10000
+stand		gre	left	0	0	fadeTime=10000
+fadeOut	black	0
+showWindow	default	bottom	0	0
+bgm	tw060
+image	h2		fadeTime=2000
+wait	1000
+fadeIn	black	1000
+		登場人物１	じゅげむ　じゅげむ　ごこうのすりきれ	かいじゃりすいぎょの　すいぎょうまつ　うんらいまつ	ふうらいまつ　くうねるところにすむところ
+clear
+		登場人物１	やぶらこうじのぶらこうじ	ぱいぽ　ぱいぽ　ぱいぽのしゅーりんがん	しゅーりんがんのぐーりんだい
+stand		gre	left	0	0	fadeTime=10000
+		登場人物１	ぐーりんだいのぽんぽこぴーの	ぽんぽこなーの	ちょうきゅうめいのちょうすけ
+clear
+wait	3000
+stand		gre	left	0	0	fadeTime=10000
+		登場人物１	じゅげむ　じゅげむ　ごこうのすりきれ	かいじゃりすいぎょの　すいぎょうまつ　うんらいまつ	ふうらいまつ　くうねるところにすむところ
+clear
+fadeOut	black	0
+showWindow	default	bottom	0	0
+bgm	tw060
+image	h2		fadeTime=2000
+wait	1000
+fadeIn	black	1000
+		登場人物１	やぶらこうじのぶらこうじ	ぱいぽ　ぱいぽ　ぱいぽのしゅーりんがん	しゅーりんがんのぐーりんだい
+stand		gre	left	0	0	fadeTime=10000
+		登場人物１	ぐーりんだいのぽんぽこぴーの	ぽんぽこなーの	ちょうきゅうめいのちょうすけ
+clear
+	
+			終了
+
