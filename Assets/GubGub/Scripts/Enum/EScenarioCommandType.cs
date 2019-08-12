@@ -22,6 +22,7 @@ namespace GubGub.Scripts.Enum
         Bgm,
         Jump,
         Selection,
+        StopScenario,
     }
 
     /// <summary>
