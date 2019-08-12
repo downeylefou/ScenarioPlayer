@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GubGub.Scripts.Command;
-using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
-using GubGub.Scripts.Parser;
 using UniRx;
 using UniRx.Async;
 using UnityEngine;
@@ -25,16 +23,16 @@ namespace GubGub.Scripts.Main
         public IObservable<Unit> IsEndScenario => _isEndScenario;
 
         private readonly Subject<Unit> _isEndScenario = new Subject<Unit>();
-        
+
+        /// <summary>
+        /// モデルクラス
+        /// </summary>
+        private ScenarioModel _model = new ScenarioModel();
+
         /// <summary>
         ///  シナリオコマンド実行クラス
         /// </summary>
         private readonly ScenarioCommandExecutor _commandExecutor = new ScenarioCommandExecutor();
-
-        /// <summary>
-        /// TSVファイルスクリプトのパーサー
-        /// </summary>
-        private readonly ScenarioParser _parser = new ScenarioParser();
 
         /// <summary>
         ///  コマンドに対応した処理をビューに行わせるラップクラス
@@ -42,66 +40,12 @@ namespace GubGub.Scripts.Main
         private ScenarioViewMediator _viewMediator;
 
         /// <summary>
-        ///  パース済みのテキスト配列
-        /// </summary>
-        private ScenarioParseData _parseData;
-        
-        /// <summary>
-        /// シナリオ再生用のコンフィグ
-        /// </summary>
-        private ScenarioConfigData Config => ConfigManager.Config;
-
-        /// <summary>
-        ///  現在参照中のスクリプト行
-        /// </summary>
-        private List<string> _currentLine;
-
-        /// <summary>
-        ///  オートプレイ中か
-        /// </summary>
-        [SerializeField]
-        private bool isAutoPlaying = true;
-
-        /// <summary>
-        /// スキップ中か
-        /// </summary>
-        private bool _isSkip;
-        
-        /// <summary>
-        /// メッセージウィンドウや選択肢を非表示にした状態か
-        /// </summary>
-        private bool _isCloseView;
-        
-        /// <summary>
-        ///  コマンド処理中にユーザー入力を止めるためのフラグ
-        /// </summary>
-        private bool _isWaitProcess;
-        
-        /// <summary>
-        /// メッセージ表示中フラグ
-        /// コマンド処理中フラグとは別に、シナリオの進行を止める
-        /// </summary>
-        private bool _isProcessingShowMessage;
-        
-        /// <summary>
-        /// メッセージ表示中フラグ
-        /// コマンド処理中フラグとは別に、シナリオの進行と入力処理を止める
-        /// </summary>
-        private bool _isProcessingShowSelection;
-        
-        /// <summary>
         /// メッセージ表示タイマーのDisposable
         /// </summary>
         private IDisposable _messageTimerDisposable;
-        
-        /// <summary>
-        /// メッセージ表示用パラメータ
-        /// </summary>
-        private readonly ScenarioMessageData _messageData = new ScenarioMessageData();
-    
-        [SerializeField]
-        public ScenarioView view;
-        
+
+        [SerializeField] public ScenarioView view;
+
 
         private async void Awake()
         {
@@ -118,16 +62,16 @@ namespace GubGub.Scripts.Main
 
             // 設定を取得してから初期化
             ConfigManager.Initialize();
-            
+
             _viewMediator = new ScenarioViewMediator(view, ConfigManager.Config);
             SoundManager.Initialize(ConfigManager.Config);
 
             InitializeCommandActions();
-            
+
             Bind();
             AddEventListeners();
         }
-        
+
         /// <summary>
         /// シナリオプレイヤーを非表示にする
         /// </summary>
@@ -147,7 +91,8 @@ namespace GubGub.Scripts.Main
             // シナリオの読み込み
             var scenario = await ResourceManager.LoadText(
                 ResourceLoadSetting.ScenarioResourcePrefix + loadScenarioPath);
-            ParseScenario(scenario);
+
+            _model.ParseScenario(scenario);
 
             // リソースの事前読み込み
             if (isResourcePreload)
@@ -162,7 +107,7 @@ namespace GubGub.Scripts.Main
         /// <returns></returns>
         private async UniTask ResourcePreload()
         {
-            await ResourceManager.StartBulkLoad(_parser.GetResourceList());
+            await ResourceManager.StartBulkLoad(_model.GetResourceList());
         }
 
         /// <summary>
@@ -174,7 +119,22 @@ namespace GubGub.Scripts.Main
             _viewMediator.ResetView();
             _viewMediator.Show();
             Forward();
-            
+
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// シナリオの再生を開始する
+        /// </summary>
+        /// <param name="label"></param>
+        /// <returns></returns>
+        public async UniTask StartScenario(string label)
+        {
+            _viewMediator.ResetView();
+            _viewMediator.Show();
+
+            JumpToLabelAndForward(label);
+
             await Task.CompletedTask;
         }
 
@@ -192,13 +152,13 @@ namespace GubGub.Scripts.Main
 
             // メッセージの表示完了を監視
             _viewMediator.MessagePresenter.IsEndMessage.Subscribe(_ => OnEndMessage()).AddTo(this);
-            
+
             // 選択肢のクリックを監視
-            _viewMediator.SelectionPresenter.onSelect.Subscribe( OnSelectionClick).AddTo(this);
+            _viewMediator.SelectionPresenter.onSelect.Subscribe(OnSelectionClick).AddTo(this);
 
             // Bgmのボリューム変更を監視
             _viewMediator.ConfigPresenter.changedBgmVolume.Subscribe(OnChangedBgmVolume).AddTo(this);
-            
+
             // Seのボリューム変更を監視
             _viewMediator.ConfigPresenter.changedSeVolume.Subscribe(OnChangedSeVolume).AddTo(this);
         }
@@ -209,7 +169,7 @@ namespace GubGub.Scripts.Main
             _viewMediator.MessagePresenter.View.OnAutoButton = OnAutoButton;
             _viewMediator.MessagePresenter.View.OnLogButton = OnLogButton;
             _viewMediator.MessagePresenter.View.OnSkipButton = OnSkipButton;
-            _viewMediator.MessagePresenter.View.OnCloseButton= OnCloseButton;
+            _viewMediator.MessagePresenter.View.OnCloseButton = OnCloseButton;
 
             _viewMediator.BackLogPresenter.onTouchDimmer = HideBackLog;
             _viewMediator.ConfigPresenter.onTouchDimmer = HideConfig;
@@ -233,17 +193,15 @@ namespace GubGub.Scripts.Main
             _commandExecutor.AddCommand(EScenarioCommandType.Jump, OnJumpCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Label, OnLabelCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Selection, OnSelectionCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.StopScenario, OnStopScenarioCommand);
         }
 
-        /// <summary>
-        /// 読み込んだテキストアセットをシナリオデータにパースする
-        /// </summary>
-        /// <param name="scenario"></param>
-        private void ParseScenario(TextAsset scenario)
+        private async Task OnStopScenarioCommand(BaseScenarioCommand value)
         {
-            List<List<string>> list = _parser.ParseScript("", scenario.text);
+            var command = value as StopScenarioCommand;
 
-            _parseData = new ScenarioParseData(list);
+
+            await Task.CompletedTask;
         }
 
         #region private method
@@ -254,33 +212,33 @@ namespace GubGub.Scripts.Main
         /// <param name="jumpLine">ジャンプする際の行データ</param>
         private void ForwardNextLine(List<string> jumpLine = null)
         {
-            _parseData.AdvanceLineNumber();
+            _model.AdvanceLineNumber();
             Forward(jumpLine);
         }
-        
+
         /// <summary>
         /// シナリオを進行させる
         /// </summary>
         /// <param name="jumpLine">ジャンプする際の行データ</param>
         private void Forward(List<string> jumpLine = null)
         {
-            _currentLine = jumpLine ?? _parseData.GetCurrentLine();
+            var line = _model.GetCurrentLine(jumpLine);
 
-            if (_currentLine == null || _currentLine.Count <= 0)
+            if (line == null)
             {
                 FinishScenario();
                 return;
             }
 
-            if (IsValidLine(_currentLine))
+            if (IsValidLine(line))
             {
-                if (_currentLine[0] != null && _currentLine[0].Length > 0)
+                if (line[0] != null && line[0].Length > 0)
                 {
-                    ProcessCommand(_currentLine[0], _currentLine.Skip(1).ToList());
+                    ProcessCommand(line[0], line.Skip(1).ToList());
                 }
                 else
                 {
-                    ProcessMessage(_currentLine.Skip(1).ToList());
+                    ProcessMessage(line.Skip(1).ToList());
                 }
             }
         }
@@ -291,7 +249,7 @@ namespace GubGub.Scripts.Main
         private void FinishScenario()
         {
             SoundManager.StopSound();
-            
+
             _isEndScenario.OnNext(Unit.Default);
         }
 
@@ -302,10 +260,10 @@ namespace GubGub.Scripts.Main
         /// <param name="param"></param>
         private void ProcessCommand(string commandName, List<string> param)
         {
-            SetIsWaitProcessState(true);
+            _model.IsWaitProcess = true;
             _commandExecutor.ProcessCommand(commandName, param);
         }
-        
+
         /// <summary>
         ///  メッセージコマンドを処理する
         /// </summary>
@@ -336,34 +294,25 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
-        ///  ユーザー入力を止めるための処理待ちフラグを設定する
-        /// </summary>
-        /// <param name="value"></param>
-        private void SetIsWaitProcessState(bool value)
-        {
-            _isWaitProcess = value;
-        }
-        
-        /// <summary>
         /// メッセージ表示完了時、一定のディレイ後、オートやスキップ中なら次に進む
         /// </summary>
         private void OnEndMessage()
         {
             _messageTimerDisposable?.Dispose();
-            
+
             _messageTimerDisposable = Observable
-                .Timer(TimeSpan.FromMilliseconds(GetMinMessageWaitTimeMilliSecond()))
+                .Timer(TimeSpan.FromMilliseconds(_model.GetMinMessageWaitTimeMilliSecond()))
                 .Subscribe(_ =>
                 {
-                    _isProcessingShowMessage = false;
-                    
-                    if ((isAutoPlaying || _isSkip) && !_isProcessingShowSelection)
+                    _model.IsProcessingShowMessage = false;
+
+                    if (_model.IsAutoForwardable())
                     {
                         ForwardNextLine();
                     }
                 }).AddTo(this);
         }
-        
+
         /// <summary>
         /// コマンド完了時
         /// </summary>
@@ -371,41 +320,12 @@ namespace GubGub.Scripts.Main
         {
             // メッセージコマンドは即終了状態になるが、クリック待ちを行うため、次の行には進まない
             // 選択肢コマンドも同様
-            if (!_isProcessingShowMessage && !_isProcessingShowSelection)
+            if (!_model.IsProcessingShowMessage && !_model.IsProcessingShowSelection)
             {
-                SetIsWaitProcessState(false);
+                _model.IsWaitProcess = false;
 
                 ForwardNextLine();
             }
-        }
-
-        /// <summary>
-        /// メッセージの一文字あたりの表示速度を取得する
-        /// </summary>
-        /// <returns></returns>
-        private int GetMessageSpeedMilliSecond()
-        {
-            if (_isSkip)
-            {
-                return Config.SkipMessageSpeedMilliSecond;
-            }
-            if (isAutoPlaying)
-            {
-                return Config.AutoMessageSpeedMilliSecond;
-            }
-
-            return Config.MessageSpeedMilliSecond;
-        }
-        
-        /// <summary>
-        /// メッセージ表示完了タイマーのウェイト時間を取得する
-        /// </summary>
-        /// <returns></returns>
-        private int GetMinMessageWaitTimeMilliSecond()
-        {
-            return _isSkip ?
-                Config.MinSkipWaitTimeMilliSecond :
-                Config.MinAutoWaitTimeMilliSecond;
         }
 
         /// <summary>
@@ -422,11 +342,11 @@ namespace GubGub.Scripts.Main
         private void HideConfig()
         {
             _viewMediator.HideConfig();
-            
+
             // コンフィグを保存
             ConfigManager.SaveConfig();
         }
-        
+
         /// <summary>
         /// 指定のラベル名に遷移して、シナリオを進める
         /// </summary>
@@ -437,35 +357,35 @@ namespace GubGub.Scripts.Main
             {
                 return;
             }
-            
-            var line = _parseData.GetLineForJumpToLabel(labelName);
+
+            var line = _model.GetLineForJumpToLabel(labelName);
             Forward(line);
         }
-        
+
         /// <summary>
         /// 選択肢ビューを選択した
         /// </summary>
         private void OnSelectionClick(string labelName)
         {
-            _isProcessingShowSelection = false;
-            
+            _model.IsProcessingShowSelection = false;
+
             _viewMediator.SelectionPresenter.Clear();
             JumpToLabelAndForward(labelName);
         }
-        
+
         /// <summary>
         /// メッセージウィンドウと選択肢の表示状態を変更する
         /// </summary>
         private void ChangeViewCloseState(bool isCloseView)
         {
-            _isCloseView = isCloseView;
-            _viewMediator.ChangeViewVisibleWithCloseState(_isCloseView);
+            _model.IsCloseView = isCloseView;
+            _viewMediator.ChangeViewVisibleWithCloseState(_model.IsCloseView);
         }
-        
+
         #endregion
 
         #region commandAction
-        
+
         private async Task OnLabelCommand(BaseScenarioCommand value)
         {
             // 何もしない
@@ -478,24 +398,21 @@ namespace GubGub.Scripts.Main
 
             // 次の行も選択肢コマンドでなければ、選択肢表示中フラグを有効にし、
             // 以降のコマンドに進まないようにする
-            if (!_parseData.GetIsMatchNextLineCommandName(
-                command.CommandType.GetName()))
-            {
-                _isProcessingShowSelection = true;
-            }
-            
+            _model.CheckNextLineOnSelectionCommand(command?.CommandType.GetName());
+
             _viewMediator.SelectionPresenter.AddSelection(command);
             await Task.CompletedTask;
         }
-        
+
         private async Task OnJumpCommand(BaseScenarioCommand value)
         {
             var command = value as JumpCommand;
-            SetIsWaitProcessState(false);
+            _model.IsWaitProcess = false;
 
-            JumpToLabelAndForward(command.LabelName);
+            JumpToLabelAndForward(command?.LabelName);
+            await Task.CompletedTask;
         }
-    
+
         private async Task OnClearCommand(BaseScenarioCommand value)
         {
             var command = value as ClearCommand;
@@ -527,19 +444,18 @@ namespace GubGub.Scripts.Main
             SoundManager.PlayBgm(ResourceLoadSetting.BgmResourcePrefix + command?.FileName);
             await Task.CompletedTask;
         }
-        
+
         private async Task OnSeCommand(BaseScenarioCommand value)
         {
             var command = value as SeCommand;
             SoundManager.PlaySe(ResourceLoadSetting.SeResourcePrefix + command?.FileName);
             await Task.CompletedTask;
         }
-        
+
         private async Task OnWaitCommand(BaseScenarioCommand value)
         {
             await Task.Delay(
-                (value is WaitCommand command)? command.waitMilliSecond : 
-                WaitCommand.DefaultWaitMilliSecond);
+                (value is WaitCommand command) ? command.waitMilliSecond : WaitCommand.DefaultWaitMilliSecond);
         }
 
         private async Task OnImageCommand(BaseScenarioCommand value)
@@ -552,28 +468,27 @@ namespace GubGub.Scripts.Main
         private async Task OnMessageCommand(BaseScenarioCommand value)
         {
             var command = value as MessageCommand;
-            
+
             PlayVoice(command?.VoiceName);
-            
+
             // メッセージ表示開始
-            _messageData.SetParam(command?.Message, command?.SpeakerName,
-                GetMessageSpeedMilliSecond(), _isSkip);
-            _viewMediator.OnShowMessage(_messageData);
+            _viewMediator.OnShowMessage(
+                _model.GetMessageData(command?.Message, command?.SpeakerName));
 
             _viewMediator.AddScenarioLog(command);
 
-            _isProcessingShowMessage = true;
+            _model.IsProcessingShowMessage = true;
             _messageTimerDisposable?.Dispose();
-            
+
             await Task.CompletedTask;
         }
-        
+
         private async Task OnStandCommand(BaseScenarioCommand value)
         {
             var command = value as StandCommand;
             await _viewMediator.ShowStand(command);
         }
-        
+
         #endregion
 
         #region userInput method
@@ -588,36 +503,36 @@ namespace GubGub.Scripts.Main
             {
                 return;
             }
-            
-            var tempIsSkip = _isSkip;
-            
+
+            var tempIsSkip = _model.IsSkip;
+
             // ユーザー操作を止めている間も、オートとスキップ状態の解除は行う
-            isAutoPlaying = false;
+            _model.IsAutoPlaying = false;
             _viewMediator.MessagePresenter.SetAutoButtonState(false);
-            
-            _isSkip = false;
+
+            _model.IsSkip = false;
             _viewMediator.MessagePresenter.SetSkipButtonState(false);
 
             // クローズ中なら、クローズの解除だけ行う
-            if (_isCloseView)
+            if (_model.IsCloseView)
             {
                 ChangeViewCloseState(false);
                 return;
             }
-            
+
             // 右クリックはクローズボタンと同等の処理を行う
             if (eventData?.button == PointerEventData.InputButton.Right)
             {
                 OnCloseButton();
                 return;
             }
-            
-            if (_isWaitProcess || _isProcessingShowSelection)
+
+            if (_model.IsWaitProcess || _model.IsProcessingShowSelection)
             {
                 return;
             }
 
-            _isProcessingShowMessage = false;
+            _model.IsProcessingShowMessage = false;
             _messageTimerDisposable?.Dispose();
 
             // スキップ中だったなら表示を止めるだけにして、次には進まない
@@ -636,7 +551,7 @@ namespace GubGub.Scripts.Main
                 ForwardNextLine();
             }
         }
-        
+
         /// <summary>
         /// マウスホイールを行った
         /// </summary>
@@ -653,7 +568,7 @@ namespace GubGub.Scripts.Main
                 OnLogButton();
             }
         }
-        
+
         /// <summary>
         ///  バックログボタン
         /// </summary>
@@ -676,10 +591,12 @@ namespace GubGub.Scripts.Main
         /// <param name="isAuto"></param>
         private void OnAutoButton(bool isAuto)
         {
-            isAutoPlaying = isAuto;
-            
+            _model.IsAutoPlaying = isAuto;
+
             // メッセージ表示タイマー終了後にオートプレイになった場合は、すぐに進める
-            if (isAutoPlaying && !_isProcessingShowMessage && !_isProcessingShowSelection)
+            if (_model.IsAutoPlaying &&
+                !_model.IsProcessingShowMessage &&
+                !_model.IsProcessingShowSelection)
             {
                 ForwardNextLine();
             }
@@ -691,19 +608,19 @@ namespace GubGub.Scripts.Main
         /// <param name="isSkip"></param>
         private void OnSkipButton(bool isSkip)
         {
-            _isSkip = isSkip;
-            
-            if (isSkip && !_isWaitProcess)
+            _model.IsSkip = isSkip;
+
+            if (isSkip && !_model.IsWaitProcess)
             {
                 // メッセージ表示更新中なら、スキップ表示に変更させる
                 if (_viewMediator.MessagePresenter.IsMessageProcess)
                 {
                     _viewMediator.MessagePresenter.EnableMessageSkip();
                 }
-                else if(!_isProcessingShowSelection)
+                else if (!_model.IsProcessingShowSelection)
                 {
                     // メッセージを表示しきっている状態なので、すぐ次に進める
-                    _isProcessingShowMessage = false;
+                    _model.IsProcessingShowMessage = false;
                     ForwardNextLine();
                 }
             }
@@ -714,9 +631,9 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private void OnCloseButton()
         {
-            _isSkip = false;
-            isAutoPlaying = false;
-            
+            _model.IsSkip = false;
+            _model.IsAutoPlaying = false;
+
             ChangeViewCloseState(true);
         }
 
@@ -729,7 +646,7 @@ namespace GubGub.Scripts.Main
             ConfigManager.SetParam(
                 EScenarioConfigKey.BgmVolume, volume);
         }
-        
+
         /// <summary>
         /// Seのボリューム値が変更された
         /// </summary>
