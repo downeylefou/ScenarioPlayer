@@ -46,6 +46,11 @@ namespace GubGub.Scripts.Main
         /// メッセージウィンドウや選択肢を非表示にした状態か
         /// </summary>
         public bool IsCloseView { get; set; }
+        
+        /// <summary>
+        /// 停止中か
+        /// </summary>
+        public bool IsStop { get; set; }
 
         /// <summary>
         ///  コマンド処理中にユーザー入力を止めるためのフラグ
@@ -181,6 +186,20 @@ namespace GubGub.Scripts.Main
             }
 
             return Config.MessageSpeedMilliSecond;
+        }
+
+        /// <summary>
+        /// 停止状態にする
+        /// </summary>
+        public void StopScenario()
+        {
+            IsStop = true;
+            IsSkip = false;
+            IsCloseView = false;
+            IsAutoPlaying = false;
+            IsWaitProcess = false;
+            IsProcessingShowMessage = false;
+            IsProcessingShowSelection = false;
         }
     }
 }

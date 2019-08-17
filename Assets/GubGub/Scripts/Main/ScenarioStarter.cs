@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
 using UniRx;
+using UniRx.Async;
 using UnityEngine;
 
 namespace GubGub.Scripts.Main
@@ -21,7 +21,7 @@ namespace GubGub.Scripts.Main
         /// リソースを取得するサーバーのホスト
         /// </summary>
         [SerializeField] private string serverHostUrl;
-        
+
         /// <summary>
         /// シナリオプレイヤーのメインプレゼンター
         /// </summary>
@@ -41,7 +41,7 @@ namespace GubGub.Scripts.Main
         /// リソースのアセットバンドルを再生前にロードしておくか
         /// </summary>
         [SerializeField] private bool isResourcePreload;
-        
+
         /// <summary>
         /// リソースの読み込み先
         /// </summary>
@@ -50,28 +50,47 @@ namespace GubGub.Scripts.Main
         /// <summary>
         /// アセットバンドル末尾の拡張子
         /// </summary>
-        [SerializeField] private string assetbundleSuffix;
-        
+        [SerializeField] private string assetBundleSuffix;
+
         /// <summary>
         /// シナリオ終了を通知するストリーム
         /// </summary>
         public IObservable<Unit> IsEndScenario => _isEndScenario;
-        
+
         private readonly Subject<Unit> _isEndScenario = new Subject<Unit>();
 
-        
         /// <summary>
-        /// 
+        /// 初期化済みか
         /// </summary>
+        private bool _isInitialized;
+
+
         private async void Awake()
         {
+            await Initialize();
+        }
+
+        /// <summary>
+        /// 初期化する
+        /// </summary>
+        public async UniTask Initialize()
+        {
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            await presenter.Initialize();
+            
             InitializeResourceLoadSetting();
             Bind();
-            
+
             if (loadOnAwake)
             {
                 await LoadScenario();
             }
+
+            _isInitialized = true;
         }
 
         /// <summary>
@@ -80,7 +99,7 @@ namespace GubGub.Scripts.Main
         private void InitializeResourceLoadSetting()
         {
             ResourceLoadSetting.ResourceLoadType = resourceLoadType;
-            ResourceLoadSetting.AssetBundleSuffix = assetbundleSuffix;
+            ResourceLoadSetting.AssetBundleSuffix = assetBundleSuffix;
             ResourceLoadSetting.ServerHostUrl = serverHostUrl;
         }
 
@@ -95,19 +114,19 @@ namespace GubGub.Scripts.Main
         private void OnScenarioEnd()
         {
             presenter.Hide();
-            
+
             // リソースを解放
             ResourceManager.UnloadAllAsset();
-            
+
             _isEndScenario.OnNext(Unit.Default);
         }
-        
+
         /// <summary>
         /// シナリオ、リソースの読み込みを行う
         /// </summary>
         /// <param name="scenarioFilePath"></param>
         /// <returns></returns>
-        public async Task LoadScenario(string scenarioFilePath = null)
+        public async UniTask LoadScenario(string scenarioFilePath = null)
         {
             if (scenarioFilePath != null)
             {
@@ -117,9 +136,9 @@ namespace GubGub.Scripts.Main
             // ローカル読み込みならプリロードは行わない
             var isPreload = (isResourcePreload &&
                              !resourceLoadType.Equals(EResourceLoadType.Resources));
-            
+
             await presenter.LoadScenario(loadScenarioPath, isPreload);
-                            
+
             if (isAutoPlay)
             {
                 await StartScenario();
@@ -130,9 +149,27 @@ namespace GubGub.Scripts.Main
         /// シナリオの再生を開始する
         /// </summary>
         /// <returns></returns>
-        public async Task StartScenario()
+        public async UniTask StartScenario()
         {
             await presenter.StartScenario();
+        }
+
+        /// <summary>
+        /// 指定ラベルからシナリオの再生を開始する
+        /// </summary>
+        /// <param name="label"></param>
+        /// <returns></returns>
+        public async UniTask PlayLabel(string label)
+        {
+            await presenter.StartScenario(label);
+        }
+
+        /// <summary>
+        /// シナリオプレイヤーを非表示にする
+        /// </summary>
+        public void HideScenarioPlayer()
+        {
+            presenter.Hide();
         }
     }
 }

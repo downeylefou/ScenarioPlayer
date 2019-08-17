@@ -47,16 +47,11 @@ namespace GubGub.Scripts.Main
         [SerializeField] public ScenarioView view;
 
 
-        private async void Awake()
-        {
-            await Initialize();
-        }
-
         /// <summary>
         /// ビューやパラメータを初期化する
         /// </summary>
         /// <returns></returns>
-        private async Task Initialize()
+        public async Task Initialize()
         {
             await view.Initialize();
 
@@ -113,27 +108,24 @@ namespace GubGub.Scripts.Main
         /// <summary>
         /// シナリオの再生を開始する
         /// </summary>
+        /// <param name="label">再生の起点となるラベル名</param>
         /// <returns></returns>
-        public async Task StartScenario()
+        public async UniTask StartScenario(string label = null)
         {
             _viewMediator.ResetView();
-            _viewMediator.Show();
-            Forward();
 
-            await Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// シナリオの再生を開始する
-        /// </summary>
-        /// <param name="label"></param>
-        /// <returns></returns>
-        public async UniTask StartScenario(string label)
-        {
-            _viewMediator.ResetView();
+            gameObject.SetActive(true);
             _viewMediator.Show();
 
-            JumpToLabelAndForward(label);
+            // ラベルが指定されていなければ、最初から再生する
+            if (string.IsNullOrEmpty(label))
+            {
+                Forward();
+            }
+            else
+            {
+                JumpToLabelAndForward(label);
+            }
 
             await Task.CompletedTask;
         }
@@ -194,14 +186,6 @@ namespace GubGub.Scripts.Main
             _commandExecutor.AddCommand(EScenarioCommandType.Label, OnLabelCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Selection, OnSelectionCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.StopScenario, OnStopScenarioCommand);
-        }
-
-        private async Task OnStopScenarioCommand(BaseScenarioCommand value)
-        {
-            var command = value as StopScenarioCommand;
-
-
-            await Task.CompletedTask;
         }
 
         #region private method
@@ -318,6 +302,11 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private void OnCommandEnd()
         {
+            if (_model.IsStop)
+            {
+                return;
+            }
+
             // メッセージコマンドは即終了状態になるが、クリック待ちを行うため、次の行には進まない
             // 選択肢コマンドも同様
             if (!_model.IsProcessingShowMessage && !_model.IsProcessingShowSelection)
@@ -385,6 +374,16 @@ namespace GubGub.Scripts.Main
         #endregion
 
         #region commandAction
+
+        private async Task OnStopScenarioCommand(BaseScenarioCommand value)
+        {
+            var command = value as StopScenarioCommand;
+
+            _model.StopScenario();
+            Hide();
+
+            await Task.CompletedTask;
+        }
 
         private async Task OnLabelCommand(BaseScenarioCommand value)
         {
