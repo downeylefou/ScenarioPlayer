@@ -15,11 +15,11 @@ namespace Sample._0_Test.Scripts
         /// スタートボタンが押されたことを通知する
         /// </summary>
         public IObservable<Unit> OnClickStartButton => _onClickStartButton;
-        
+
         private readonly Subject<Unit> _onClickStartButton = new Subject<Unit>();
-        
+
         [SerializeField] private Button startButton;
-        
+
         // TODO: 表示テスト用　
         private ScenarioStarter _scenarioStarter;
 
@@ -40,5 +40,4 @@ namespace Sample._0_Test.Scripts
             });
         }
     }
-
 }

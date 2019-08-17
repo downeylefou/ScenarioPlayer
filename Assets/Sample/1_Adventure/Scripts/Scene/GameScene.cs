@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GubGub.Scripts;
+using UnityEngine;
 
 namespace Sample._1_Adventure.Scripts
 {
@@ -7,9 +8,9 @@ namespace Sample._1_Adventure.Scripts
     /// </summary>
     public class GameScene : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
+        public void StartScene()
         {
+            AdvScenarioUtil.PlayLabel(AdvScenarioLabel.abcd);
             
         }
     
