@@ -14,4 +14,12 @@ MITライセンス
 
 * UIEffect Copyright (c) 2018 Takashi Sakai https://github.com/mob-sakai/UIEffect/blob/develop/LICENSE.md
 
+# 使用素材提供
+
 * 空想曲線 https://kopacurve.blog.fc2.com/
+
+* 【あとらそふと】 http://atorasoft.blog18.fc2.com/
+
+* フリー音楽素材 H/MIX GALLERY http://www.hmix.net/
+
+* BGM・フリー音楽素材 MusMus http://musmus.main.jp/
