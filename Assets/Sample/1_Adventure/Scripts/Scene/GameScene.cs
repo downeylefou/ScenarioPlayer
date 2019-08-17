@@ -1,4 +1,6 @@
 ﻿using GubGub.Scripts;
+using Sample._1_Adventure.Scripts.Data;
+using Sample._1_Adventure.Scripts.Util;
 using UnityEngine;
 
 namespace Sample._1_Adventure.Scripts
