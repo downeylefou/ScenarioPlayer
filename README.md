@@ -8,6 +8,8 @@ MITライセンス
 
 * UniRx Copyright (c) 2014 Yoshifumi Kawai https://github.com/neuecc/UniRx/blob/master/LICENSE
 
+* UniTask Copyright（c）2019 Kawai Yoshifumi / Cysharp、Inc. https://github.com/Cysharp/UniTask/blob/master/LICENSE
+
 * DOTween Copyright (c) 2014 Daniele Giardini - Demigiant http://dotween.demigiant.com/license.php
 
 * FancyScrollView Copyright (c) 2017 setchi https://github.com/setchi/FancyScrollView/blob/master/LICENSE
