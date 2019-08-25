@@ -27,7 +27,7 @@ namespace GubGub.Scripts.Main
         /// <summary>
         /// モデルクラス
         /// </summary>
-        private ScenarioModel _model = new ScenarioModel();
+        private readonly ScenarioModel _model = new ScenarioModel();
 
         /// <summary>
         ///  シナリオコマンド実行クラス
@@ -54,7 +54,7 @@ namespace GubGub.Scripts.Main
         public async Task Initialize()
         {
             await view.Initialize();
-
+//                
             // 設定を取得してから初期化
             ConfigManager.Initialize();
 
@@ -112,6 +112,7 @@ namespace GubGub.Scripts.Main
         /// <returns></returns>
         public async UniTask StartScenario(string label = null)
         {
+            _model.ReleaseStopState();
             _viewMediator.ResetView();
 
             gameObject.SetActive(true);
@@ -186,6 +187,28 @@ namespace GubGub.Scripts.Main
             _commandExecutor.AddCommand(EScenarioCommandType.Label, OnLabelCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Selection, OnSelectionCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.StopScenario, OnStopScenarioCommand);
+        }
+        
+        /// <summary>
+        /// パラメータを設定する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        public void SetParameter<T>(string key, T value)
+        {
+            _model.SetParameter(key, value);
+        }
+
+        /// <summary>
+        /// パラメータを取得する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetParameter<T>(string key)
+        {
+            return _model.GetParameter<T>(key);
         }
 
         #region private method

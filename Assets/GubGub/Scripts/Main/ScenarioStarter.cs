@@ -171,5 +171,27 @@ namespace GubGub.Scripts.Main
         {
             presenter.Hide();
         }
+        
+        /// <summary>
+        /// パラメータを設定する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        public void SetParameter<T>(string key, T value)
+        {
+            presenter.SetParameter(key, value);
+        }
+        
+        /// <summary>
+        /// パラメータを取得する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetParameter<T>(string key)
+        {
+            return presenter.GetParameter<T>(key);
+        }
     }
 }

@@ -41,13 +41,13 @@ namespace GubGub.Scripts.Main
         /// </summary>
         [SerializeField] private DefaultMessageWindowView defaultMessageWindowView;
 
-        [SerializeField] private CanvasGroup _canvasGroup;
+        [SerializeField] private CanvasGroup canvasGroup;
 
         /// <summary>
         /// 入力されたテキストのビルダー
         /// </summary>
         private readonly StringBuilder _originalMessage = new StringBuilder(200);
-        
+
         /// <summary>
         /// 出力するテキストのビルダー
         /// </summary>
@@ -106,7 +106,7 @@ namespace GubGub.Scripts.Main
         {
             CurrentView.SetAutoButtonState(isAuto);
         }
-        
+
         /// <summary>
         /// スキップボタンのトグル状態を設定する
         /// </summary>
@@ -115,7 +115,7 @@ namespace GubGub.Scripts.Main
         {
             CurrentView.SetSkipButtonState(isAuto);
         }
-        
+
         /// <summary>
         ///  マージン座標を指定してウィンドウを表示させる
         /// </summary>
@@ -201,8 +201,9 @@ namespace GubGub.Scripts.Main
         /// <param name="value"></param>
         public void SetInteractable(bool value)
         {
-            _canvasGroup.interactable = value;
+            canvasGroup.interactable = value;
         }
+
         /// <summary>
         /// ウィンドウタイプよってウィンドウを切り替える
         /// </summary>
@@ -212,7 +213,7 @@ namespace GubGub.Scripts.Main
             if (_type != type)
             {
                 // 複数のウィンドウを使用したい場合、ここでCurrentViewを変更する
-                
+
                 // ウィンドウの表示を初期化す
                 ClearText();
                 CurrentView.gameObject.SetActive(false);
@@ -222,7 +223,7 @@ namespace GubGub.Scripts.Main
 
             CurrentView.gameObject.SetActive(true);
         }
-        
+
         /// <summary>
         ///  タイマーのカウントごとにメッセージを1文字ずつ表示する
         ///  タグ文字に対しては、1文字ずつ、対応する終了タグを表示用に挿入する
@@ -240,7 +241,7 @@ namespace GubGub.Scripts.Main
 
                 _viewMessage.Clear();
                 _currentCharIndex++;
-                
+
                 // スキップ表示用にインデックスを加算
                 ForwardCharIndexForSkip();
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
@@ -13,26 +14,6 @@ namespace GubGub.Scripts.Main
     public class ScenarioModel
     {
         /// <summary>
-        /// TSVファイルスクリプトのパーサー
-        /// </summary>
-        private readonly ScenarioParser _parser = new ScenarioParser();
-
-        /// <summary>
-        ///  パース済みのテキスト配列
-        /// </summary>
-        private ScenarioParseData _parseData;
-
-        /// <summary>
-        /// シナリオ再生用のコンフィグ
-        /// </summary>
-        private ScenarioConfigData Config => ConfigManager.Config;
-
-        /// <summary>
-        ///  現在参照中のスクリプト行
-        /// </summary>
-        private List<string> _currentLine;
-
-        /// <summary>
         ///  オートプレイ中か
         /// </summary>
         public bool IsAutoPlaying { get; set; }
@@ -46,7 +27,7 @@ namespace GubGub.Scripts.Main
         /// メッセージウィンドウや選択肢を非表示にした状態か
         /// </summary>
         public bool IsCloseView { get; set; }
-        
+
         /// <summary>
         /// 停止中か
         /// </summary>
@@ -70,9 +51,35 @@ namespace GubGub.Scripts.Main
         public bool IsProcessingShowSelection { get; set; }
 
         /// <summary>
+        /// TSVファイルスクリプトのパーサー
+        /// </summary>
+        private readonly ScenarioParser _parser = new ScenarioParser();
+
+        /// <summary>
+        ///  パース済みのテキスト配列
+        /// </summary>
+        private ScenarioParseData _parseData;
+
+        /// <summary>
+        /// シナリオ再生用のコンフィグ
+        /// </summary>
+        private ScenarioConfigData Config => ConfigManager.Config;
+
+        /// <summary>
+        ///  現在参照中のスクリプト行
+        /// </summary>
+        private List<string> _currentLine;
+
+        /// <summary>
+        /// ゲーム側と受け渡しを行うパラメータリスト
+        /// </summary>
+        private readonly Dictionary<string, ScenarioParameter> _params = new Dictionary<string, ScenarioParameter>();
+
+        /// <summary>
         /// メッセージ表示用パラメータ
         /// </summary>
-        private ScenarioMessageData _messageData = new ScenarioMessageData();
+        private readonly ScenarioMessageData _messageData = new ScenarioMessageData();
+
 
         /// <summary>
         /// シナリオ内に含まれるリソースの、パス・タイプのリストを取得する
@@ -94,6 +101,9 @@ namespace GubGub.Scripts.Main
             _parseData = new ScenarioParseData(list);
         }
 
+        /// <summary>
+        /// シナリオの行番号を進める
+        /// </summary>
         public void AdvanceLineNumber()
         {
             _parseData.AdvanceLineNumber();
@@ -163,10 +173,76 @@ namespace GubGub.Scripts.Main
         /// <param name="speakerName"></param>
         public ScenarioMessageData GetMessageData(string message, string speakerName)
         {
+            message = GetParameterReplacedMessage(message);
+
             _messageData.SetParam(
                 message, speakerName, GetMessageSpeedMilliSecond(), IsSkip);
 
             return _messageData;
+        }
+
+        /// <summary>
+        /// 元の文字列から、パラメータを置換した文字列を取得する
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private string GetParameterReplacedMessage(string message)
+        {
+            const string parameterPattern = @"(?<=\@).*(?=\/@)";
+
+            var matches = Regex.Matches(message, parameterPattern);
+            foreach (Match match in matches)
+            {
+                var param = GetParameter<object>(match.Value) ?? "";
+                var replacePattern = @"@" + match.Value + @"/@";
+
+                message = message.Replace(replacePattern, param.ToString());
+            }
+
+            return message;
+        }
+
+        /// <summary>
+        /// パラメータを設定する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        public void SetParameter<T>(string key, T value)
+        {
+            ScenarioParameter param;
+
+            if (!_params.ContainsKey(key))
+            {
+                param = new ScenarioParameter();
+                _params.Add(key, param);
+            }
+
+            param = _params[key];
+            param.SetValue(value);
+        }
+
+        /// <summary>
+        /// パラメータを取得する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetParameter<T>(string key)
+        {
+            if (_params.ContainsKey(key))
+            {
+                return _params[key].GetParameter<T>();
+            }
+
+            Debug.LogWarning("Undefined parameter : " + key);
+            
+            if (typeof(T) == typeof(string))
+            {
+                return (T) (object) "";
+            }
+
+            return default;
         }
 
         /// <summary>
@@ -200,6 +276,14 @@ namespace GubGub.Scripts.Main
             IsWaitProcess = false;
             IsProcessingShowMessage = false;
             IsProcessingShowSelection = false;
+        }
+
+        /// <summary>
+        /// シナリオの停止状態を解除する
+        /// </summary>
+        public void ReleaseStopState()
+        {
+            IsStop = false;
         }
     }
 }
