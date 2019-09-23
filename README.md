@@ -16,6 +16,8 @@ MITライセンス
 
 * UIEffect Copyright (c) 2018 Takashi Sakai https://github.com/mob-sakai/UIEffect/blob/develop/LICENSE.md
 
+* unity-excel-importer Copyright (c) 2018 Mikito Yoshiya https://github.com/mikito/unity-excel-importer/blob/master/LICENSE
+
 # 使用素材提供
 
 * 空想曲線 https://kopacurve.blog.fc2.com/
