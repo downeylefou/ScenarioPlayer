@@ -11,10 +11,10 @@ namespace GubGub.Scripts.Command
 
         protected override void Reset()
         {
-            Debug.Log("UnknownCommand: Rest()");
+            Debug.Log("UnknownCommand: Reset()");
         }
 
-        protected virtual void MapParameters()
+        protected override void MapParameters()
         {
             Debug.Log("UnknownCommand: MapParameters()");
         }
