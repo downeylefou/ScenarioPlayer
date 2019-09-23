@@ -6,7 +6,7 @@
     public enum EResourceType
     {
         Background,
-        Stand,
+        Character,
         Bgm,
         Se,
         Voice,
