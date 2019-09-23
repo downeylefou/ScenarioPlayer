@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GubGub.Scripts.Command;
 using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
+using GubGub.Scripts.Lib.ResourceSetting;
 using UniRx;
 using UniRx.Async;
 using UnityEngine;
@@ -106,6 +107,21 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
+        /// リソース設定ファイルの読み込みを行う
+        /// </summary>
+        /// <returns></returns>
+        public async Task LoadResourceSetting()
+        {
+            var setting = await ResourceManager.LoadObject(
+                ResourceLoadSetting.ResourceSettingPath);
+
+            if (setting != null && setting is ScenarioResourceSetting resourceSetting)
+            {
+                _model.SetResourceSetting(resourceSetting);
+            }
+        }
+
+        /// <summary>
         /// シナリオの再生を開始する
         /// </summary>
         /// <param name="label">再生の起点となるラベル名</param>
@@ -138,7 +154,7 @@ namespace GubGub.Scripts.Main
             _viewMediator.onMouseWheel.Subscribe(OnMouseWheel).AddTo(this);
 
             // コマンドの終了を監視
-            _commandExecutor.commandEnd.Subscribe(_ => { OnCommandEnd(); }).AddTo(this);
+            _commandExecutor.CommandEnd.Subscribe(_ => { OnCommandEnd(); }).AddTo(this);
 
             // バックログからのボイス再生通知を監視
             _viewMediator.BackLogPresenter.PlayVoiceStream.Subscribe(PlayVoice).AddTo(this);
@@ -188,7 +204,7 @@ namespace GubGub.Scripts.Main
             _commandExecutor.AddCommand(EScenarioCommandType.Selection, OnSelectionCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.StopScenario, OnStopScenarioCommand);
         }
-        
+
         /// <summary>
         /// パラメータを設定する
         /// </summary>
@@ -268,7 +284,7 @@ namespace GubGub.Scripts.Main
         private void ProcessCommand(string commandName, List<string> param)
         {
             _model.IsWaitProcess = true;
-            _commandExecutor.ProcessCommand(commandName, param);
+            _commandExecutor.ProcessCommand(_model.GetCommand(commandName, param));
         }
 
         /// <summary>
@@ -277,7 +293,8 @@ namespace GubGub.Scripts.Main
         /// <param name="param"></param>
         private void ProcessMessage(List<string> param)
         {
-            _commandExecutor.ProcessCommand(EScenarioCommandType.Message.ToString(), param);
+            _commandExecutor.ProcessCommand(
+                _model.GetCommand(EScenarioCommandType.Message.ToString(), param));
         }
 
         /// <summary>
@@ -400,8 +417,6 @@ namespace GubGub.Scripts.Main
 
         private async Task OnStopScenarioCommand(BaseScenarioCommand value)
         {
-            var command = value as StopScenarioCommand;
-
             _model.StopScenario();
             Hide();
 
@@ -507,8 +522,10 @@ namespace GubGub.Scripts.Main
 
         private async Task OnStandCommand(BaseScenarioCommand value)
         {
-            var command = value as StandCommand;
-            await _viewMediator.ShowStand(command);
+            if (value is StandCommand command)
+            {
+                await _viewMediator.ShowStand(command);
+            }
         }
 
         #endregion

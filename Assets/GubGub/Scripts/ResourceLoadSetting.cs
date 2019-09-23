@@ -16,6 +16,11 @@ namespace GubGub.Scripts
         public static string ScenarioResourcePrefix = "scenario/";
         
         /// <summary>
+        /// リソース設定ファイルのパス
+        /// </summary>
+        public static string ResourceSettingPath = "scenario/setting/ScenarioResourceSetting";
+        
+        /// <summary>
         /// リソースの読み込み先
         /// </summary>
         public static EResourceLoadType ResourceLoadType { get; set; }

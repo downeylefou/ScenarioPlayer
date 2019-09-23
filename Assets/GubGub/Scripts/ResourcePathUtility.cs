@@ -18,7 +18,7 @@ namespace GubGub.Scripts
             new Dictionary<EResourceType, string>()
             {
                 {EResourceType.Background, ResourceLoadSetting.BackgroundResourcePrefix},
-                {EResourceType.Stand, ResourceLoadSetting.StandResourcePrefix},
+                {EResourceType.Character, ResourceLoadSetting.StandResourcePrefix},
                 {EResourceType.Bgm, ResourceLoadSetting.BgmResourcePrefix},
                 {EResourceType.Se, ResourceLoadSetting.SeResourcePrefix},
                 {EResourceType.Voice, ResourceLoadSetting.VoiceResourcePrefix},

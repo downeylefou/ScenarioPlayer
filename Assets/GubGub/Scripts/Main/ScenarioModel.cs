@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using GubGub.Scripts.Command;
 using GubGub.Scripts.Data;
 using GubGub.Scripts.Enum;
 using GubGub.Scripts.Lib;
+using GubGub.Scripts.Lib.ResourceSetting;
 using GubGub.Scripts.Parser;
 using UnityEngine;
 
@@ -51,6 +53,12 @@ namespace GubGub.Scripts.Main
         public bool IsProcessingShowSelection { get; set; }
 
         /// <summary>
+        /// リソース設定モデル
+        /// </summary>
+        private readonly ScenarioResourceSettingModel _resourceSettingModel =
+            new ScenarioResourceSettingModel();
+
+        /// <summary>
         /// TSVファイルスクリプトのパーサー
         /// </summary>
         private readonly ScenarioParser _parser = new ScenarioParser();
@@ -80,6 +88,16 @@ namespace GubGub.Scripts.Main
         /// </summary>
         private readonly ScenarioMessageData _messageData = new ScenarioMessageData();
 
+        /// <summary>
+        ///  コマンドタイプに応じたシナリオコマンドを返すクラス
+        /// </summary>
+        private readonly CommandPalette _commandPalette = new CommandPalette();
+
+        /// <summary>
+        /// リソース設定からコマンドのパラメータを更新する
+        /// </summary>
+        private readonly CommandUpdater _commandUpdater = new CommandUpdater();
+
 
         /// <summary>
         /// シナリオ内に含まれるリソースの、パス・タイプのリストを取得する
@@ -91,12 +109,21 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
+        /// エクセルのリソース情報を設定する
+        /// </summary>
+        /// <param name="setting"></param>
+        public void SetResourceSetting(ScenarioResourceSetting setting)
+        {
+            _resourceSettingModel.Initialize(setting);
+        }
+
+        /// <summary>
         /// 読み込んだテキストアセットをシナリオデータにパースする
         /// </summary>
         /// <param name="scenario"></param>
         public void ParseScenario(TextAsset scenario)
         {
-            List<List<string>> list = _parser.ParseScript("", scenario.text);
+            var list = _parser.ParseScript(scenario.text, _resourceSettingModel);
 
             _parseData = new ScenarioParseData(list);
         }
@@ -236,7 +263,7 @@ namespace GubGub.Scripts.Main
             }
 
             Debug.LogWarning("Undefined parameter : " + key);
-            
+
             if (typeof(T) == typeof(string))
             {
                 return (T) (object) "";
@@ -284,6 +311,41 @@ namespace GubGub.Scripts.Main
         public void ReleaseStopState()
         {
             IsStop = false;
+        }
+
+        /// <summary>
+        /// コマンドを取得する
+        /// </summary>
+        /// <param name="commandName"></param>
+        /// <param name="param"></param>
+        public BaseScenarioCommand GetCommand(string commandName, List<string> param)
+        {
+            var command = _commandPalette.GetCommand(commandName);
+            command.Initialize(param);
+            UpdateCommand(command);
+
+            return command;
+        }
+
+        /// <summary>
+        /// リソースのファイルパスを取得する
+        /// <para>設定シートに無い場合はリソース名をそのまま返す</para>
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string GetFilePath(string resourceName, EResourceType type)
+        {
+            return _parser.GetFilePathFromResourceSetting(resourceName, type) ?? resourceName;
+        }
+
+        /// <summary>
+        /// リソース設定からコマンドのパラメータを更新する
+        /// </summary>
+        /// <param name="command"></param>
+        private void UpdateCommand(BaseScenarioCommand command)
+        {
+            _commandUpdater.UpdateCommand(command, _resourceSettingModel);
         }
     }
 }

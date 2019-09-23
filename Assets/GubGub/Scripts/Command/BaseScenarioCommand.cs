@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GubGub.Scripts.Enum;
+using GubGub.Scripts.Lib.ResourceSetting;
 
 namespace GubGub.Scripts.Command
 {
@@ -16,7 +17,7 @@ namespace GubGub.Scripts.Command
 
 
         protected BaseScenarioCommand(
-            EScenarioCommandType commandType = EScenarioCommandType.Unknown)
+        EScenarioCommandType commandType = EScenarioCommandType.Unknown)
         {
             CommandType = commandType;
         }
@@ -32,6 +33,14 @@ namespace GubGub.Scripts.Command
 
             this.rawParams = rawParams;
             MapParameters();
+        }
+
+        /// <summary>
+        /// 設定シートのEntityからパラメータを更新する
+        /// </summary>
+        /// <param name="entity"></param>
+        public virtual void UpdateParameter(IResourceSettingEntity entity)
+        {
         }
 
         /// <summary>

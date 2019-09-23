@@ -19,6 +19,15 @@ namespace Sample._1_Adventure.Scripts.Util
         {
             _starter = starter;
         }
+        
+        /// <summary>
+        /// リソース設定ファイルの読み込みを行う
+        /// </summary>
+        /// <returns></returns>
+        public static async UniTask LoadResourceSetting()
+        {
+            await _starter.LoadResourceSetting();
+        }
 
         /// <summary>
         /// シナリオの読み込みを行う
@@ -45,6 +54,28 @@ namespace Sample._1_Adventure.Scripts.Util
         public static void Hide()
         {
             _starter.HideScenarioPlayer();
+        }
+
+        /// <summary>
+        /// パラメータを設定する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void SetParameter<T>(string key, T value)
+        {
+            _starter.SetParameter(key, value);
+        }
+
+        /// <summary>
+        /// パラメータを取得する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetParameter<T>(string key)
+        {
+            return _starter.GetParameter<T>(key);
         }
     }
 }

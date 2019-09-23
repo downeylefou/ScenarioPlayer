@@ -1,4 +1,5 @@
 ﻿using GubGub.Scripts.Enum;
+using GubGub.Scripts.Lib.ResourceSetting;
 
 namespace GubGub.Scripts.Command
 {
@@ -23,9 +24,25 @@ namespace GubGub.Scripts.Command
         public bool IsWait { get; private set; } // フェード表示を待って次のコマンドに移るか
         public bool Reverse { get; private set; }
 
+        public string FilePath { get; set; }
+
 
         public StandCommand() : base(EScenarioCommandType.Stand)
         {
+        }
+
+        /// <summary>
+        /// 設定シートからパラメータを更新する
+        /// </summary>
+        /// <param name="entity"></param>
+        public override void UpdateParameter(IResourceSettingEntity entity)
+        {
+            if (entity is CharacterSheetEntity characterEntity)
+            {
+                FilePath = characterEntity.FilePath;
+                OffsetX += characterEntity.OffsetX;
+                OffsetY += characterEntity.OffsetY;
+            }
         }
 
         protected override void Reset()

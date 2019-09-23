@@ -122,6 +122,15 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
+        /// リソース設定ファイルの読み込みを行う
+        /// </summary>
+        /// <returns></returns>
+        public async UniTask LoadResourceSetting()
+        {
+            await presenter.LoadResourceSetting();
+        }
+        
+        /// <summary>
         /// シナリオ、リソースの読み込みを行う
         /// </summary>
         /// <param name="scenarioFilePath"></param>
