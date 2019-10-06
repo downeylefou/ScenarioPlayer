@@ -21,27 +21,29 @@ namespace GubGub.Scripts.View
         [SerializeField] private Button closeButton;
         [SerializeField] private Button configButton;
         [SerializeField] private Button logButton;
-        
-        
+
+
         public string MessageText
         {
             get => messageText.text;
             set => messageText.text = value;
         }
-        
+
+        [SerializeField] private Text messageText;
+
         public string NameText
         {
             get => nameText.text;
             set => nameText.text = value;
         }
-        
-        public Image NextIcon => nextIcon; 
 
-        [SerializeField] private Text messageText;
         [SerializeField] private Text nameText;
-        
+
+        public Image NextIcon => nextIcon;
         [SerializeField] private Image nextIcon;
 
+        public IFaceWindow FaceWindow => faceWindow;
+        [SerializeField] private ScenarioFaceWindow faceWindow;
 
         public void Start()
         {
@@ -51,8 +53,8 @@ namespace GubGub.Scripts.View
             configButton.onClick.AddListener(OnConfigButton);
             logButton.onClick.AddListener(OnLogButton);
         }
-        
-        public void SetParent(Transform parent,  bool worldPositionStays)
+
+        public void SetParent(Transform parent, bool worldPositionStays)
         {
             gameObject.transform.SetParent(parent, worldPositionStays);
         }
@@ -65,7 +67,7 @@ namespace GubGub.Scripts.View
         {
             gameObject.SetActive(isVisible);
         }
-        
+
         /// <summary>
         /// オートボタンのトグル状態を設定する
         /// </summary>
@@ -74,7 +76,7 @@ namespace GubGub.Scripts.View
         {
             autoButton.isOn = isAuto;
         }
-        
+
         /// <summary>
         /// スキップボタンのトグル状態を設定する
         /// </summary>

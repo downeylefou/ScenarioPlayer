@@ -62,6 +62,7 @@ namespace GubGub.Scripts.Command
         {
             EmotionName = GetString(0, EmotionOff);
             StandName = GetString(1, null);
+            FilePath = StandName;
             Position = GetString(2, EScenarioStandPosition.Center.GetName());
 
             if (rawParams.Count >= 4)

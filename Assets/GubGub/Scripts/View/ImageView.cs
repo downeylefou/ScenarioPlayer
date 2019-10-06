@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Coffee.UIExtensions;
+﻿using Coffee.UIExtensions;
 using GubGub.Scripts.Lib;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +11,13 @@ namespace GubGub.Scripts.View
     public class ImageView : MonoBehaviour
     {
         public Image Image { get; private set; }
+
+        public RectTransform RectTransform => _rectTransform
+            ? _rectTransform
+            : _rectTransform
+                = GetComponent<RectTransform>();
+
+        private RectTransform _rectTransform;
 
         private UIEffect _uiEffect;
         private UIFlip _uiFlip;
@@ -33,6 +38,7 @@ namespace GubGub.Scripts.View
             imageView._uiEffect.material =
                 Resources.Load<Material>("ScenarioPlayer/Material/UI-Effect");
             imageView._uiFlip = view.AddComponent<UIFlip>();
+
             return imageView;
         }
 

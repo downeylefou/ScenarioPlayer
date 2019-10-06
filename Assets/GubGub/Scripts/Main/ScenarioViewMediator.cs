@@ -49,11 +49,11 @@ namespace GubGub.Scripts.Main
         /// 画面をクリックしたことを通知する
         /// </summary>
         public readonly Subject<PointerEventData> onAnyClick = new Subject<PointerEventData>();
-        
+
         /// <summary>
         /// スクロールされたことを通知する
         /// </summary>
-        public readonly Subject<float> onMouseWheel= new Subject<float>();
+        public readonly Subject<float> onMouseWheel = new Subject<float>();
 
         /// <summary>
         ///  立ち位置と、そこに表示されている立ち絵の名前のリスト
@@ -64,6 +64,11 @@ namespace GubGub.Scripts.Main
                 {EScenarioStandPosition.Left, ""}, {EScenarioStandPosition.Center, ""},
                 {EScenarioStandPosition.Right, ""}
             };
+
+        /// <summary>
+        /// 顔ウィンドウに表示中の画像名
+        /// </summary>
+        private readonly string _currentFaceImageName = "";
 
         /// <summary>
         ///  現在の背景の名前
@@ -91,7 +96,7 @@ namespace GubGub.Scripts.Main
 
             ConfigPresenter.Initialize(configData);
         }
-        
+
         /// <summary>
         /// シナリオプレイヤーを表示する
         /// </summary>
@@ -99,7 +104,7 @@ namespace GubGub.Scripts.Main
         {
             _view.Show();
         }
-        
+
         /// <summary>
         /// シナリオプレイヤーを非表示にする
         /// </summary>
@@ -107,7 +112,7 @@ namespace GubGub.Scripts.Main
         {
             _view.Hide();
         }
-        
+
         /// <summary>
         /// ビューの表示を初期化する
         /// </summary>
@@ -124,7 +129,7 @@ namespace GubGub.Scripts.Main
                 }
             }
 
-            _currentImageName = ""; 
+            _currentImageName = "";
         }
 
         /// <summary>
@@ -135,7 +140,7 @@ namespace GubGub.Scripts.Main
         {
             BackLogPresenter.AddScenarioLog(command);
         }
-        
+
         /// <summary>
         /// シナリオバックログを表示する
         /// </summary>
@@ -143,7 +148,7 @@ namespace GubGub.Scripts.Main
         {
             BackLogPresenter.Show();
         }
-        
+
         /// <summary>
         /// シナリオバックログを非表示にする
         /// </summary>
@@ -151,7 +156,7 @@ namespace GubGub.Scripts.Main
         {
             BackLogPresenter.Hide();
         }
-        
+
         /// <summary>
         /// クローズ状態かによってビューの表示状態を変更する
         /// </summary>
@@ -169,7 +174,7 @@ namespace GubGub.Scripts.Main
         {
             ConfigPresenter.Show();
         }
-        
+
         /// <summary>
         /// コンフィグを非表示にする
         /// </summary>
@@ -177,9 +182,9 @@ namespace GubGub.Scripts.Main
         {
             ConfigPresenter.Hide();
         }
-        
+
         #region public command method
-   
+
         /// <summary>
         ///  メッセージウィンドウを表示する
         /// </summary>
@@ -282,6 +287,38 @@ namespace GubGub.Scripts.Main
         }
 
         /// <summary>
+        /// 顔ウィンドウを初期化して非表示にする
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public async Task ClearFace(FaceCommand command)
+        {
+            _view.ClearFace();
+        }
+
+        /// <summary>
+        /// 顔ウィンドウ表示を行う
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public async Task ShowFace(FaceCommand command)
+        {
+            if (_currentImageName == command.Name)
+            {
+                return;
+            }
+
+            var sprite = await GetStandImageSprite(command.FilePath);
+            var imageView = ImageView.Instantiate(command.Name);
+            imageView.SetSprite(sprite);
+            imageView.SetReverse(command.Reverse);
+            imageView.RectTransform.SetScale(new Vector3(command.ScaleX, command.ScaleY));
+            imageView.RectTransform.SetXy(command.OffsetX, command.OffsetY);
+
+            _view.ChangeFaceImage(imageView);
+        }
+
+        /// <summary>
         ///  フェードアウト処理を行う
         /// </summary>
         /// <param name="command"></param>
@@ -320,6 +357,9 @@ namespace GubGub.Scripts.Main
                 case EScenarioClearTargetType.Text:
                     _view.MessagePresenter.ClearText();
                     break;
+                case EScenarioClearTargetType.Face:
+                    _view.ClearFace();
+                    break;
                 case EScenarioClearTargetType.Left:
                 case EScenarioClearTargetType.Center:
                 case EScenarioClearTargetType.Right:
@@ -332,7 +372,7 @@ namespace GubGub.Scripts.Main
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
+
         #endregion
 
         #region private method
@@ -379,8 +419,8 @@ namespace GubGub.Scripts.Main
         /// <param name="fadeTimeMilliSecond"></param>
         /// <param name="isWait"></param>
         private async Task RemoveStand(EScenarioStandPosition position,
-                                       int fadeTimeMilliSecond = 0,
-                                       bool isWait = false)
+        int fadeTimeMilliSecond = 0,
+        bool isWait = false)
         {
             var standObj = _view.GetStandImageView(position);
             if (standObj)
@@ -388,6 +428,10 @@ namespace GubGub.Scripts.Main
                 var image = standObj.GetComponent<Image>();
                 await Fade(image, image.color, fadeTimeMilliSecond, 0f, isWait);
                 _view.RemoveStand(position);
+            }
+            else
+            {
+                await Task.CompletedTask;
             }
 
             _currentStandNames[position] = "";
@@ -398,8 +442,8 @@ namespace GubGub.Scripts.Main
         /// </summary>
         /// <returns></returns>
         private async Task RemoveEmotion(EScenarioStandPosition position,
-                                         int fadeTimeMilliSecond = 0,
-                                         bool isWait = false)
+        int fadeTimeMilliSecond = 0,
+        bool isWait = false)
         {
         }
 
@@ -515,7 +559,7 @@ namespace GubGub.Scripts.Main
         /// <param name="isWait"></param>
         /// <returns></returns>
         private async Task Fade(Image target, Color fadeColor, int fadeMilliSecond, float fadeAlpha,
-                                bool isWait = false)
+        bool isWait = false)
         {
             var fadeTime = (float) fadeMilliSecond / 1000;
             fadeColor.a = target.color.a;
@@ -542,7 +586,5 @@ namespace GubGub.Scripts.Main
         }
 
         #endregion
-
-
     }
 }

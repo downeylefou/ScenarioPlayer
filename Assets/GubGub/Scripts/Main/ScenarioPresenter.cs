@@ -192,6 +192,7 @@ namespace GubGub.Scripts.Main
             _commandExecutor.AddCommand(EScenarioCommandType.Message, OnMessageCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.ShowWindow, OnShowWindowCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Stand, OnStandCommand);
+            _commandExecutor.AddCommand(EScenarioCommandType.Face, OnFaceCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Image, OnImageCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.Wait, OnWaitCommand);
             _commandExecutor.AddCommand(EScenarioCommandType.FadeOut, OnFadeOutCommand);
@@ -527,7 +528,15 @@ namespace GubGub.Scripts.Main
                 await _viewMediator.ShowStand(command);
             }
         }
-
+        
+        private async Task OnFaceCommand(BaseScenarioCommand value)
+        {
+            if (value is FaceCommand command)
+            {
+                await _viewMediator.ShowFace(command);
+            }
+        }
+        
         #endregion
 
         #region userInput method

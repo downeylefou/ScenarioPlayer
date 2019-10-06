@@ -25,7 +25,7 @@ namespace GubGub.Scripts.Main
         [SerializeField] private ScenarioSelectionPresenter selectionPresenter;
 
         [SerializeField] private ScenarioConfigPresenter configPresenter;
-        
+
         [SerializeField] private GameObject backgroundRoot;
         [SerializeField] private GameObject standImageRoot;
         [SerializeField] private GameObject clickArea;
@@ -65,7 +65,7 @@ namespace GubGub.Scripts.Main
         /// メッセージビューの管理クラス
         /// </summary>
         public ScenarioMessagePresenter MessagePresenter => scenarioMessagePresenter;
-        
+
         /// <summary>
         /// バックログビューの管理クラス
         /// </summary>
@@ -80,7 +80,7 @@ namespace GubGub.Scripts.Main
         /// コンフィグウィンドウのの管理クラス
         /// </summary>
         public ScenarioConfigPresenter ConfigPresenter => configPresenter;
-        
+
         public async Task Initialize()
         {
             await InitializeMessageView();
@@ -90,7 +90,7 @@ namespace GubGub.Scripts.Main
         private void AddEventListeners()
         {
             clickArea.GetComponent<Image>().OnPointerClickAsObservable().Subscribe(onAnyClick).AddTo(this);
-            
+
             clickArea.GetComponent<Image>().UpdateAsObservable()
                 .Select(_ => Input.GetAxis("Mouse ScrollWheel"))
                 .Where(axis => Math.Abs(axis) > 0)
@@ -104,13 +104,13 @@ namespace GubGub.Scripts.Main
         private async Task InitializeMessageView()
         {
             await MessagePresenter.Initialize();
-            
+
             // メッセージビューを初期位置に配置
             ChangeMessageViewPosition(EScenarioMessageViewPosition.Bottom);
         }
 
         #region public method
-        
+
         /// <summary>
         /// ビューを表示する
         /// </summary>
@@ -118,7 +118,7 @@ namespace GubGub.Scripts.Main
         {
             gameObject.SetActive(true);
         }
-        
+
         /// <summary>
         /// ビューを非表示にする
         /// </summary>
@@ -126,7 +126,7 @@ namespace GubGub.Scripts.Main
         {
             gameObject.SetActive(false);
         }
-        
+
         /// <summary>
         /// 表示を初期化する
         /// </summary>
@@ -134,11 +134,11 @@ namespace GubGub.Scripts.Main
         {
             MessagePresenter.ClearText();
             SelectionPresenter.Clear();
-            
+
             RemoveAllStand();
             RemoveImage();
         }
-        
+
         /// <summary>
         /// メッセージウィンドウの基本ポジションを変更
         /// </summary>
@@ -177,7 +177,7 @@ namespace GubGub.Scripts.Main
         {
             imageObj.transform.SetParent(backgroundRoot.transform);
         }
- 
+
         /// <summary>
         ///  立ち絵オブジェクトを追加
         /// </summary>
@@ -207,6 +207,7 @@ namespace GubGub.Scripts.Main
         public void RemoveStand(EScenarioStandPosition position)
         {
             Destroy(_standImages[position]?.gameObject);
+            _standImages[position] = null;
         }
 
         /// <summary>
@@ -217,9 +218,9 @@ namespace GubGub.Scripts.Main
         {
             return fadeImage.GetComponent<Image>();
         }
-        
+
         #endregion
-        
+
         /// <summary>
         /// 全ての立ち絵を削除
         /// </summary>
@@ -242,8 +243,27 @@ namespace GubGub.Scripts.Main
                     Destroy(child.gameObject);
                 }
             }
-            
+
             backgroundRoot.transform.DetachChildren();
+        }
+
+        /// <summary>
+        /// 顔ウィンドウの画像を変更する
+        /// </summary>
+        /// <param name="imageView"></param>
+        public void ChangeFaceImage(ImageView imageView)
+        {
+            MessagePresenter.View.FaceWindow.UpdateImageView(imageView);
+            MessagePresenter.View.FaceWindow.Show();
+        }
+
+        /// <summary>
+        /// 顔ウィンドウを初期化して非表示にする
+        /// </summary>
+        public void ClearFace()
+        {
+            MessagePresenter.View.FaceWindow.Clear();
+            MessagePresenter.View.FaceWindow.Hide();
         }
     }
 }

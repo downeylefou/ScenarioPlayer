@@ -104,6 +104,9 @@ namespace GubGub.Scripts.Parser
                 case EScenarioCommandType.Stand:
                     AddResource(values[2], EResourceType.Character);
                     break;
+                case EScenarioCommandType.Face:
+                    AddResource(values[1], EResourceType.Character);
+                    break;
                 case EScenarioCommandType.Unknown:
                     if (values[0] == "")
                     {

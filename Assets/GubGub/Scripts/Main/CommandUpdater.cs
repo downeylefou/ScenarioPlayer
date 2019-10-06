@@ -20,6 +20,10 @@ namespace GubGub.Scripts.Main
             {
                 UpdateStandCommand(standCommand, settingModel);
             }
+            else if (command is FaceCommand faceCommand)
+            {
+                UpdateFaceCommand(faceCommand, settingModel);
+            }
             else if (command is BgmCommand)
             {
             }
@@ -28,6 +32,15 @@ namespace GubGub.Scripts.Main
         private void UpdateStandCommand(StandCommand command, ScenarioResourceSettingModel settingModel)
         {
             if (settingModel.GetSettingEntity(command.StandName,
+                EResourceType.Character) is CharacterSheetEntity entity)
+            {
+                command.UpdateParameter(entity);
+            }
+        }
+
+        private void UpdateFaceCommand(FaceCommand command, ScenarioResourceSettingModel settingModel)
+        {
+            if (settingModel.GetSettingEntity(command.Name,
                 EResourceType.Character) is CharacterSheetEntity entity)
             {
                 command.UpdateParameter(entity);

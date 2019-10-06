@@ -20,6 +20,8 @@ namespace GubGub.Scripts.View.Interface
         string MessageText { get; set; }
         string NameText { get; set; }
         GameObject gameObject { get; }
+        
+        IFaceWindow FaceWindow { get; }
 
         void SetParent(Transform parent, bool worldPositionStays);
       

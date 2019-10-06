@@ -13,6 +13,7 @@ namespace GubGub.Scripts.Enum
         Center,
         Right,
         Text,
+        Face,
     }
 
     /// <summary>
@@ -28,6 +29,7 @@ namespace GubGub.Scripts.Enum
                 {EScenarioClearTargetType.Center, "center"},
                 {EScenarioClearTargetType.Right, "right"},
                 {EScenarioClearTargetType.Text, "text"},
+                {EScenarioClearTargetType.Face, "face"},
             };
 
         /// <summary>
