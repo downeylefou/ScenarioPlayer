@@ -13,6 +13,7 @@ namespace Sample._1_Adventure.Scripts.Util
         public static void Initialize(LoadingView view)
         {
             _view = view;
+            _view.Initialize();
         }
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace Sample._1_Adventure.Scripts.Util
             await _view.Hide();
         }
         
-        public static async UniTask Wait(float duration = 1f)
+        public static async UniTask Wait(float duration = 0.3f)
         {
             await _view.Wait(duration);
         }
