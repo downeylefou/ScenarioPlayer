@@ -11,6 +11,9 @@ namespace GubGub.Scripts.View
         [SerializeField] private GameObject faceRoot;
         [SerializeField] private CanvasGroup canvasGroup;
 
+        private Vector3 tempLocalPosition;
+        
+        
         /// <summary>
         /// ウィンドウに画像を表示する
         /// </summary>
@@ -19,12 +22,16 @@ namespace GubGub.Scripts.View
         {
             DestroyChildren();
 
+            tempLocalPosition = imageView.RectTransform.localPosition;
+
             imageView.transform.parent = faceRoot.transform;
             imageView.RectTransform.anchorMin = Vector2.zero;
             imageView.RectTransform.anchorMax = Vector2.one;
             imageView.RectTransform.anchoredPosition3D = Vector3.zero;
             imageView.RectTransform.offsetMax = Vector2.zero;
             imageView.RectTransform.offsetMin = Vector2.zero;
+
+            imageView.RectTransform.localPosition = tempLocalPosition;
         }
 
         public void Clear()

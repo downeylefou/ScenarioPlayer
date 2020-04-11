@@ -125,6 +125,7 @@ namespace GubGub.Scripts.Main
         public void Hide()
         {
             gameObject.SetActive(false);
+            ResetView();
         }
 
         /// <summary>
@@ -133,6 +134,7 @@ namespace GubGub.Scripts.Main
         public void ResetView()
         {
             MessagePresenter.ClearText();
+            ClearFace();
             SelectionPresenter.Clear();
 
             RemoveAllStand();
