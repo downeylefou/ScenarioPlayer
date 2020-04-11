@@ -9,7 +9,10 @@ using GubGub.Scripts.Lib.ResourceSetting;
 using UniRx;
 using UniRx.Async;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using UnityEngine.Video;
 
 namespace GubGub.Scripts.Main
 {
@@ -18,6 +21,15 @@ namespace GubGub.Scripts.Main
     /// </summary>
     public class ScenarioPresenter : MonoBehaviour
     {
+        /// <summary>
+        /// シナリオ中断時のコールバック
+        /// </summary>
+        public UnityAction OnStopCallBack
+        {
+            get => _model.OnStopCallBack;
+            set => _model.OnStopCallBack = value;
+        }
+
         /// <summary>
         /// シナリオ終了を通知するストリーム
         /// </summary>
@@ -422,6 +434,8 @@ namespace GubGub.Scripts.Main
             Hide();
 
             await Task.CompletedTask;
+
+            _model.OnStopCallBack?.Invoke();
         }
 
         private async Task OnLabelCommand(BaseScenarioCommand value)
@@ -528,7 +542,7 @@ namespace GubGub.Scripts.Main
                 await _viewMediator.ShowStand(command);
             }
         }
-        
+
         private async Task OnFaceCommand(BaseScenarioCommand value)
         {
             if (value is FaceCommand command)
@@ -536,7 +550,7 @@ namespace GubGub.Scripts.Main
                 await _viewMediator.ShowFace(command);
             }
         }
-        
+
         #endregion
 
         #region userInput method

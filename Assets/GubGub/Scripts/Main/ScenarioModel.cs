@@ -7,6 +7,7 @@ using GubGub.Scripts.Lib;
 using GubGub.Scripts.Lib.ResourceSetting;
 using GubGub.Scripts.Parser;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace GubGub.Scripts.Main
 {
@@ -15,6 +16,12 @@ namespace GubGub.Scripts.Main
     /// </summary>
     public class ScenarioModel
     {
+
+        /// <summary>
+        /// シナリオ中断時のコールバック
+        /// </summary>
+        public UnityAction OnStopCallBack;
+
         /// <summary>
         ///  オートプレイ中か
         /// </summary>
@@ -347,5 +354,6 @@ namespace GubGub.Scripts.Main
         {
             _commandUpdater.UpdateCommand(command, _resourceSettingModel);
         }
+
     }
 }

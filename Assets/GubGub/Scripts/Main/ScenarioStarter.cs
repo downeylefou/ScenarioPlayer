@@ -4,6 +4,7 @@ using GubGub.Scripts.Lib;
 using UniRx;
 using UniRx.Async;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace GubGub.Scripts.Main
 {
@@ -63,6 +64,8 @@ namespace GubGub.Scripts.Main
         /// 初期化済みか
         /// </summary>
         private bool _isInitialized;
+
+        public UnityAction onPauseCallBack;
 
 
         private async void Awake()
@@ -167,9 +170,11 @@ namespace GubGub.Scripts.Main
         /// 指定ラベルからシナリオの再生を開始する
         /// </summary>
         /// <param name="label"></param>
+        /// <param name="onStopCallBack"></param>
         /// <returns></returns>
-        public async UniTask PlayLabel(string label)
+        public async UniTask PlayLabel(string label, UnityAction onStopCallBack)
         {
+            presenter.OnStopCallBack = onStopCallBack;
             await presenter.StartScenario(label);
         }
 
