@@ -1,5 +1,7 @@
-﻿using GubGub.Scripts.Main;
+﻿using System.Threading.Tasks;
+using GubGub.Scripts.Main;
 using Sample._0_Test.Scripts;
+using Sample._1_Adventure.Scripts.Scene;
 using Sample._1_Adventure.Scripts.Util;
 using Sample._1_Adventure.Scripts.View;
 using UniRx;
@@ -20,17 +22,46 @@ namespace Sample._1_Adventure.Scripts
 
         private async void Start()
         {
+            titleScene.gameObject.SetActive(true);
+            gameScene.gameObject.SetActive(false);
+            
             // ローディングの初期化
             LoadingUtil.Initialize(FindObjectOfType<LoadingView>());
-            
+
+            await InitializeScenarioPlayer();
+
+            Bind();
+
+            // デバグ用
+//            await DebugGameSceneStarter();
+        }
+
+        /// <summary>
+        /// デバグ用    タイトルからすぐにゲームシーンに移動する
+        /// </summary>
+        /// <returns></returns>
+        private async UniTask DebugGameSceneStarter()
+        {
+            gameScene.gameObject.SetActive(true);
+            titleScene.gameObject.SetActive(false);
+            gameScene.Initialize();
+            await gameScene.StartScene();
+        }
+
+        /// <summary>
+        /// シナリオプレイヤー周りを初期化する
+        /// </summary>
+        /// <returns></returns>
+        private async UniTask InitializeScenarioPlayer()
+        {
             // シナリオプレイヤーの初期化
             await scenarioStarter.Initialize();
             AdvScenarioUtil.Initialize(scenarioStarter);
             AdvScenarioUtil.Hide();
 
+            // 設定ファイルの後にシナリオを読み込む
+            await AdvScenarioUtil.LoadResourceSetting();
             await AdvScenarioUtil.LoadScenario("advTest");
-
-            Bind();
         }
 
         private void Bind()
@@ -51,9 +82,9 @@ namespace Sample._1_Adventure.Scripts
             titleScene.gameObject.SetActive(false);
 
             await LoadingUtil.Wait();
-            await LoadingUtil.Hide();
-
-            gameScene.StartScene();
+            
+            gameScene.Initialize();
+            await gameScene.StartScene();
         }
     }
 }
