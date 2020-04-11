@@ -1,6 +1,7 @@
 ﻿using GubGub.Scripts.Main;
 using Sample._1_Adventure.Scripts.Data;
 using UniRx.Async;
+using UnityEngine.Events;
 
 namespace Sample._1_Adventure.Scripts.Util
 {
@@ -43,9 +44,10 @@ namespace Sample._1_Adventure.Scripts.Util
         /// 指定ラベルの再生を行う
         /// </summary>
         /// <param name="label"></param>
-        public static async void PlayLabel(AdvScenarioLabel label)
+        /// <param name="onStopCallBack"></param>
+        public static async void PlayLabel(AdvScenarioLabel label, UnityAction onStopCallBack = null)
         {
-            await _starter.PlayLabel(label.GetName());
+            await _starter.PlayLabel(label.GetName(), onStopCallBack);
         }
 
         /// <summary>
@@ -56,6 +58,17 @@ namespace Sample._1_Adventure.Scripts.Util
             _starter.HideScenarioPlayer();
         }
 
+        /// <summary>
+        /// パラメータを設定する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <typeparam name="T"></typeparam>
+        public static void SetParameter<T>(AdvScenarioParameter key, T value)
+        {
+            _starter.SetParameter(key.GetName(), value);
+        }
+        
         /// <summary>
         /// パラメータを設定する
         /// </summary>
@@ -76,6 +89,37 @@ namespace Sample._1_Adventure.Scripts.Util
         public static T GetParameter<T>(string key)
         {
             return _starter.GetParameter<T>(key);
+        }
+        
+        /// <summary>
+        /// パラメータを取得する
+        /// </summary>
+        /// <param name="key"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetParameter<T>(AdvScenarioParameter key)
+        {
+            return _starter.GetParameter<T>(key.GetName());
+        }
+        
+        /// <summary>
+        /// キノコの数を追加して取得する
+        /// </summary>
+        /// <returns></returns>
+        public static void AddedMashRoomCount()
+        {
+            var count = GetParameter<int>(AdvScenarioParameter.MashRoomCount) + 1;
+            SetParameter(AdvScenarioParameter.MashRoomCount, count);
+        }
+        
+        /// <summary>
+        /// ドングリの数を追加して取得する
+        /// </summary>
+        /// <returns></returns>
+        public static void AddedAcornCount()
+        {
+            var count = GetParameter<int>(AdvScenarioParameter.AcornCount) + 1;
+            SetParameter(AdvScenarioParameter.AcornCount, count);
         }
     }
 }
