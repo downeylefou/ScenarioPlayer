@@ -1,25 +1,37 @@
-﻿using GubGub.Scripts;
-using Sample._1_Adventure.Scripts.Data;
+﻿using Sample._1_Adventure.Scripts.Data;
+using Sample._1_Adventure.Scripts.Map;
 using Sample._1_Adventure.Scripts.Util;
+using UniRx.Async;
 using UnityEngine;
 
-namespace Sample._1_Adventure.Scripts
+namespace Sample._1_Adventure.Scripts.Scene
 {
     /// <summary>
     /// ゲームシーンクラス
     /// </summary>
     public class GameScene : MonoBehaviour
     {
-        public void StartScene()
+        [SerializeField] private AdvMapPresenter mapPresenter;
+
+        public void Initialize()
         {
-            AdvScenarioUtil.PlayLabel(AdvScenarioLabel.abcd);
-            
+            mapPresenter.Initialize();
+
+            InitializeScenarioParameter();
         }
-    
-        // Update is called once per frame
-        void Update()
+
+        public async UniTask StartScene()
         {
-            
+            await mapPresenter.StartMap();
+        }
+
+        /// <summary>
+        /// シナリオで使用するパラメータを初期化する
+        /// </summary>
+        private void InitializeScenarioParameter()
+        {
+            AdvScenarioUtil.SetParameter(AdvScenarioParameter.MashRoomCount, 0);
+            AdvScenarioUtil.SetParameter(AdvScenarioParameter.AcornCount, 0);
         }
     }
 }
