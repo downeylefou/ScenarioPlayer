@@ -44,7 +44,7 @@ namespace GubGub.Scripts.Main
 
         public void Show()
         {
-            logScrollView.Jump(_logDataList.Count);
+            logScrollView.Jump(_logDataList.Count - 1);
 
             SetVisible(true);
         }
