@@ -1,0 +1,69 @@
+# =============== #
+# Unity generated #
+# =============== #
+Temp/
+Obj/
+UnityGenerated/
+Library/
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+ExportedObj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+
+.vs/
+
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+# ============ #
+# for others   #
+# ============ #
+*.log #log files, for some plugins
+*.pyc #python bytecode cache, for some plugins.
+sysinfo.txt #Unity3D Generated File On Crash Reports
+# ============ #
+# original   #
+# ============ #
+Packages*
+Editor*
+ProjectSettings/
+.idea/
+__Debug/
+__Debug.meta
+*.DotSettings
+Assets/Plugins/Editor*
+Assets/Plugins/UniRx*
+Assets/Plugins/UnityEngine.AssetGraph*
+Assets/Plugins/UIEffect/Assets/UIEffect_Demo*
+Assets/Plugins/RuntimeInspector*
+Assets/Plugins/IngameDebugConsole*
+Assets/Plugins/UnityEngine.AssetGraph*
+Assets/AssetBundles*
+Assets/AssetGraph*
+Assets/StreamingAssets*
+Assets/Resources/DOTweenSettings*
+Assets/Resources/scenario/*
+Assets/Resources/sound/*
+Assets/Resources/texture/*
+Assets/Demigiant*
+Assets/FancyScrollView*
+Assets/UniRx.Async*
+
+
