@@ -5,6 +5,13 @@
     /// </summary>
     public enum AdvScenarioLabel
     {
+        _1_start,
+        _1_mashRoom,
+        _1_mother_count,
+        _1_mother_warning,
+        
+        _2_acorn1,
+        _2_acorn2,
     }
 
     /// <summary>
