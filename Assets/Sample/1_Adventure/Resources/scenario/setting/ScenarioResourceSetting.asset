@@ -15,26 +15,26 @@ MonoBehaviour:
   character:
   - Name: "\u305F\u306C\u304D"
     FilePath: tanuki.png
-    OffsetX: 100
-    OffsetY: 0
+    OffsetX: 0
+    OffsetY: -80
     TalkName: 
     ScaleX: 0
     ScaleY: 0
     FaceX: 0
-    FaceY: 0
-    FaceScaleX: 0
-    FaceScaleY: 0
+    FaceY: -20
+    FaceScaleX: 1.2
+    FaceScaleY: 1.2
   - Name: "\u305F\u306C\u304D\u6BCD"
     FilePath: tanuki_m.png
     OffsetX: 0
     OffsetY: -80
-    TalkName: "\u30DE\u30DE"
+    TalkName: 
     ScaleX: 0
     ScaleY: 0
     FaceX: 0
-    FaceY: 0
-    FaceScaleX: 0
-    FaceScaleY: 0
+    FaceY: -20
+    FaceScaleX: 1.2
+    FaceScaleY: 1.2
   bgm:
   - Name: adv_01
     FilePath: adv_01
