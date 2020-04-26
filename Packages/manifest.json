@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": "https://github.com/twksos/UniTask.git#upm-1.2.0",
+    "com.neuecc.unirx": "https://github.com/starikcetin/UniRx.git#7.1.0",
     "com.unity.collab-proxy": "1.2.16",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.ide.vscode": "1.1.4",
@@ -7,6 +9,7 @@
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.timeline": "1.2.13",
     "com.unity.ugui": "1.0.0",
+    "jp.setchi.fancyscrollview": "https://github.com/setchi/FancyScrollView.git#upm",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -38,5 +41,19 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
+  },
+  "lock": {
+    "com.cysharp.unitask": {
+      "revision": "upm-1.2.0",
+      "hash": "05042e5cb17806b6bd7c8565bd0afca5d2cd0c68"
+    },
+    "com.neuecc.unirx": {
+      "revision": "7.1.0",
+      "hash": "1a85804d5cb938ca07eb8f2ef95ec5fe9714c218"
+    },
+    "jp.setchi.fancyscrollview": {
+      "revision": "upm",
+      "hash": "18c1db90a91f5965260e6a216d9ec6aea51c4968"
+    }
   }
 }
