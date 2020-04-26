@@ -8,7 +8,7 @@ namespace GubGub.Scripts.View
     /// <summary>
     /// シナリオバックログでスクロールに表示されるセルビュー
     /// </summary>
-    public class LogScrollCellView : FancyScrollViewCell<ScenarioLogData>
+    public class LogScrollCellView : FancyCell<ScenarioLogData>
     {
         /// <summary>
         /// ビューの表示を更新するアニメータ
