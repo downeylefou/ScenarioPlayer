@@ -125,7 +125,7 @@ namespace GubGub.Scripts.Main
         public void ShowWindow(EScenarioMessageViewType type, int marginX, int marginY)
         {
             ChangeWindow(type);
-            SetMessageViewPosition(CurrentView, marginX, marginY);
+            //SetMessageViewPosition(CurrentView, marginX, marginY);
         }
 
         /// <summary>
