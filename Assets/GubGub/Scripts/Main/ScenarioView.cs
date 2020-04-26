@@ -147,18 +147,18 @@ namespace GubGub.Scripts.Main
         /// <param name="position"></param>
         public void ChangeMessageViewPosition(EScenarioMessageViewPosition position)
         {
-            switch (position)
-            {
-                case EScenarioMessageViewPosition.Bottom:
-                    MessagePresenter.SetViewParent(messageWindowPosBottom.transform);
-                    break;
-                case EScenarioMessageViewPosition.Top:
-                    MessagePresenter.SetViewParent(messageWindowPosTop.transform);
-                    break;
-                default:
-                    MessagePresenter.SetViewParent(messageWindowPosCenter.transform);
-                    break;
-            }
+            // switch (position)
+            // {
+            //     case EScenarioMessageViewPosition.Bottom:
+            //         MessagePresenter.SetViewParent(messageWindowPosBottom.transform);
+            //         break;
+            //     case EScenarioMessageViewPosition.Top:
+            //         MessagePresenter.SetViewParent(messageWindowPosTop.transform);
+            //         break;
+            //     default:
+            //         MessagePresenter.SetViewParent(messageWindowPosCenter.transform);
+            //         break;
+            // }
         }
 
         /// <summary>
