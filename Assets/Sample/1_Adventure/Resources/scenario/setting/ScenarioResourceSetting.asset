@@ -22,8 +22,8 @@ MonoBehaviour:
     ScaleY: 0
     FaceX: 0
     FaceY: -20
-    FaceScaleX: 1.2
-    FaceScaleY: 1.2
+    FaceScaleX: 1
+    FaceScaleY: 1
   - Name: "\u305F\u306C\u304D\u6BCD"
     FilePath: tanuki_m.png
     OffsetX: 0
@@ -33,8 +33,8 @@ MonoBehaviour:
     ScaleY: 0
     FaceX: 0
     FaceY: -20
-    FaceScaleX: 1.2
-    FaceScaleY: 1.2
+    FaceScaleX: 1
+    FaceScaleY: 1
   bgm:
   - Name: adv_01
     FilePath: adv_01
